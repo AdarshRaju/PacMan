@@ -1,0 +1,140 @@
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 90vh;
+  background-color: green;
+}
+
+header {
+  background-color: magenta;
+}
+
+#mainGridContainer {
+  height: 500px;
+  width: 500px;
+  background-color: red;
+  display: flex;
+  flex-direction: column;
+}
+
+.rows {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+.cells {
+  height: 100%;
+  width: 100%;
+  border: solid black 1px;
+}
+
+.pathCell {
+  background-color: yellow;
+}
+
+#designBtnsContainer {
+  width: 500px;
+  display: flex;
+  justify-content: space-around;
+  margin: 10px 0;
+}
+
+button {
+  padding: 10px 15px;
+  font-weight: bold;
+}
+
+.food {
+  background: radial-gradient(yellow 0%, transparent 50%);
+}
+
+.pacman {
+  border-radius: 50%;
+  /* border: none; */
+  background-image: conic-gradient(
+    yellow 45deg,
+    red 45deg,
+    red 135deg,
+    yellow 135deg
+  );
+  animation: pacman-down 0.35s linear infinite;
+}
+
+@keyframes pacman-right {
+  from {
+    background-image: conic-gradient(
+      yellow 45deg,
+      red 45deg,
+      red 135deg,
+      yellow 135deg
+    );
+  }
+  to {
+    background-image: conic-gradient(
+      yellow 45deg,
+      yellow 45deg,
+      yellow 135deg,
+      yellow 135deg
+    );
+  }
+}
+
+@keyframes pacman-left {
+  from {
+    background-image: conic-gradient(
+      yellow 225deg,
+      red 225deg,
+      red 315deg,
+      yellow 315deg
+    );
+  }
+  to {
+    background-image: conic-gradient(
+      yellow 45deg,
+      yellow 45deg,
+      yellow 135deg,
+      yellow 135deg
+    );
+  }
+}
+
+@keyframes pacman-up {
+  from {
+    background-image: conic-gradient(
+      red 0deg,
+      red 45deg,
+      yellow 45deg,
+      yellow 315deg,
+      red 315deg
+    );
+  }
+  to {
+    background-image: conic-gradient(
+      yellow 45deg,
+      yellow 45deg,
+      yellow 135deg,
+      yellow 135deg
+    );
+  }
+}
+
+@keyframes pacman-down {
+  from {
+    background-image: conic-gradient(
+      yellow 135deg,
+      red 135deg,
+      red 225deg,
+      yellow 225deg
+    );
+  }
+  to {
+    background-image: conic-gradient(
+      yellow 45deg,
+      yellow 45deg,
+      yellow 135deg,
+      yellow 135deg
+    );
+  }
+}
