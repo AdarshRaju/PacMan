@@ -1,9 +1,17 @@
 import * as docElems from "../globalVariables/docElems.js";
 import stateVars from "../globalVariables/stateVars.js";
 
+function addGhostToState() {
+  let newGhostCell =
+    stateVars.pathArray[stateVars.currentGhostCoor[0]][
+      stateVars.currentGhostCoor[1]
+    ];
+
+  newGhostCell.push("ghost");
+}
+
 function addGhostToDOM() {
   const ghostSVG = docElems.ghostSVG.cloneNode(true);
-  ghostSVG.classList.add("ghosts");
 
   docElems.pathCells[0] &&
     ghostSVG.setAttribute(
@@ -17,16 +25,67 @@ function addGhostToDOM() {
     );
   ghostSVG.style.display = "block";
   ghostSVG.style.fill = "orange";
+  ghostSVG.id = "ghostInBoard";
   docElems.mainGridContainer.children[stateVars.currentGhostCoor[0]].children[
     stateVars.currentGhostCoor[1]
   ].appendChild(ghostSVG);
+}
+
+function removeGhostFromState() {
+  const ghostInd =
+    stateVars.pathArray[stateVars.currentGhostCoor[0]][
+      stateVars.currentGhostCoor[1]
+    ].indexOf("ghost");
+  if (ghostInd > -1) {
+    stateVars.pathArray[stateVars.currentGhostCoor[0]][
+      stateVars.currentGhostCoor[1]
+    ].splice(ghostInd, 1);
+  }
 }
 
 function removeGhostFromDOM() {
   document.querySelector(".ghosts")?.remove();
 }
 
-// populateGhostinArrayandDOM() is for the initial placement of ghost in the board
+function updateGhostAnimationDirection() {
+  switch (stateVars.ghostDirection) {
+    case "Up":
+      [...docElems.ghosts].forEach((ghost) => {
+        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cx", 35);
+        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cy", 28);
+        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cx", 65);
+        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cy", 28);
+      });
+      break;
+    case "Down":
+      [...docElems.ghosts].forEach((ghost) => {
+        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cx", 35);
+        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cy", 32);
+        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cx", 65);
+        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cy", 32);
+      });
+      break;
+    case "Left":
+      [...docElems.ghosts].forEach((ghost) => {
+        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cx", 33);
+        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cy", 30);
+        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cx", 63);
+        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cy", 30);
+      });
+      break;
+    case "Right":
+      [...docElems.ghosts].forEach((ghost) => {
+        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cx", 37);
+        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cy", 30);
+        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cx", 67);
+        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cy", 30);
+      });
+      break;
+  }
+  [...docElems.ghosts];
+}
+
+// populateGhostinArrayandDOM() is for the initial placement of ghost in a random path cell in the board
 export function populateGhostinArrayandDOM() {
   let randomIndex = Math.floor(Math.random() * stateVars.pathCoord.length);
 
@@ -39,30 +98,66 @@ export function populateGhostinArrayandDOM() {
   }
   stateVars.currentGhostCoor = stateVars.pathCoord[randomIndex];
 
-  let randomCell =
-    stateVars.pathArray[stateVars.currentGhostCoor[0]][
-      stateVars.currentGhostCoor[1]
-    ];
-
-  randomCell.push("ghost");
-
+  addGhostToState();
   addGhostToDOM();
   randomGhostDirection();
 }
 
-// updateGhostArrayAndDOM() is used to move the ghost along the path cells available to it
-function updateGhostArrayAndDOM(prevGhostArray) {
-  // Remove ghost from state array using indexOf() and splice()
-  const ghostInd =
-    stateVars.pathArray[prevGhostArray[0]][prevGhostArray[1]].indexOf("ghost");
-  if (ghostInd > -1) {
-    stateVars.pathArray[prevGhostArray[0]][prevGhostArray[1]].splice(
-      ghostInd,
-      1
-    );
-  }
+function ghostPathFindingLogic() {
+  const dirArr = getAvailableDirectionsGhost();
+  // The ghost will continue moving forward unless it hits a wall or finds an alternative path
+  switch (stateVars.ghostDirection) {
+    case "Up":
+      if (
+        dirArr.includes(ghostRight) ||
+        dirArr.includes(ghostLeft) ||
+        !dirArr.includes(ghostUp)
+      ) {
+        clearInterval(stateVars.ghostInterval);
+        randomGhostDirection();
+      }
 
-  // Remove ghost from DOM
+      break;
+    case "Down":
+      if (
+        dirArr.includes(ghostRight) ||
+        dirArr.includes(ghostLeft) ||
+        !dirArr.includes(ghostDown)
+      ) {
+        clearInterval(stateVars.ghostInterval);
+        randomGhostDirection();
+      }
+
+      break;
+    case "Left":
+      if (
+        dirArr.includes(ghostUp) ||
+        dirArr.includes(ghostDown) ||
+        !dirArr.includes(ghostLeft)
+      ) {
+        clearInterval(stateVars.ghostInterval);
+        randomGhostDirection();
+      }
+
+      break;
+    case "Right":
+      if (
+        dirArr.includes(ghostUp) ||
+        dirArr.includes(ghostDown) ||
+        !dirArr.includes(ghostRight)
+      ) {
+        clearInterval(stateVars.ghostInterval);
+        randomGhostDirection();
+      }
+
+      break;
+  }
+}
+
+// updateGhostArrayAndDOM() is used to move the ghost along the path cells available to it
+function updateGhostArrayAndDOM() {
+  removeGhostFromState();
+
   removeGhostFromDOM();
 
   // Set the new ghost coordinate based on direction
@@ -100,51 +195,10 @@ function updateGhostArrayAndDOM(prevGhostArray) {
   // If food is in the new cell without a ghost, remove 'food' from state array and DOM and update score
   if (!stateVars.gameOver) {
     updatedGhostCell.push("ghost");
-
+    updateGhostAnimationDirection();
     addGhostToDOM();
-    const dirArr = getAvailableDirectionsGhost();
-    switch (stateVars.ghostDirection) {
-      case "Up":
-        if (dirArr.includes(ghostRight) || dirArr.includes(ghostLeft)) {
-          clearInterval(stateVars.ghostInterval);
-          randomGhostDirection();
-        } else if (!dirArr.includes(ghostUp)) {
-          clearInterval(stateVars.ghostInterval);
-          // There will be only one directon remaining - the opposite direction
-          randomGhostDirection();
-        }
-        break;
-      case "Down":
-        if (dirArr.includes(ghostRight) || dirArr.includes(ghostLeft)) {
-          clearInterval(stateVars.ghostInterval);
-          randomGhostDirection();
-        } else if (!dirArr.includes(ghostDown)) {
-          clearInterval(stateVars.ghostInterval);
-          // There will be only one directon remaining - the opposite direction
-          randomGhostDirection();
-        }
-        break;
-      case "Left":
-        if (dirArr.includes(ghostUp) || dirArr.includes(ghostDown)) {
-          clearInterval(stateVars.ghostInterval);
-          randomGhostDirection();
-        } else if (!dirArr.includes(ghostLeft)) {
-          clearInterval(stateVars.ghostInterval);
-          // There will be only one directon remaining - the opposite direction
-          randomGhostDirection();
-        }
-        break;
-      case "Right":
-        if (dirArr.includes(ghostUp) || dirArr.includes(ghostDown)) {
-          clearInterval(stateVars.ghostInterval);
-          randomGhostDirection();
-        } else if (!dirArr.includes(ghostRight)) {
-          clearInterval(stateVars.ghostInterval);
-          // There will be only one directon remaining - the opposite direction
-          randomGhostDirection();
-        }
-        break;
-    }
+
+    ghostPathFindingLogic();
   }
 }
 
@@ -159,7 +213,7 @@ export function ghostUp() {
   if (checkUp) {
     stateVars.ghostDirection = "Up";
 
-    updateGhostArrayAndDOM(stateVars.currentGhostCoor);
+    updateGhostArrayAndDOM();
   } else {
   }
 }
@@ -175,7 +229,7 @@ export function ghostDown() {
   if (checkDown) {
     stateVars.ghostDirection = "Down";
 
-    updateGhostArrayAndDOM(stateVars.currentGhostCoor);
+    updateGhostArrayAndDOM();
   } else {
   }
 }
@@ -191,7 +245,7 @@ export function ghostLeft() {
   if (checkLeft) {
     stateVars.ghostDirection = "Left";
 
-    updateGhostArrayAndDOM(stateVars.currentGhostCoor);
+    updateGhostArrayAndDOM();
   } else {
   }
 }
@@ -207,7 +261,7 @@ export function ghostRight() {
   if (checkRight) {
     stateVars.ghostDirection = "Right";
 
-    updateGhostArrayAndDOM(stateVars.currentGhostCoor);
+    updateGhostArrayAndDOM();
   } else {
   }
 }
@@ -263,4 +317,16 @@ export function getAvailableDirectionsGhost() {
   }
 
   return dirArr;
+}
+
+export function generateGhostAtParticularPoint(x, y, direction) {
+  clearInterval(stateVars.ghostInterval);
+  removeGhostFromState();
+  removeGhostFromDOM();
+  stateVars.currentGhostCoor[0] = x;
+  stateVars.currentGhostCoor[1] = y;
+  stateVars.ghostDirection = direction;
+  addGhostToState();
+  addGhostToDOM();
+  updateGhostAnimationDirection();
 }

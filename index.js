@@ -47,3 +47,12 @@ docElems.loadGridPattern.addEventListener("click", async () => {
 });
 
 document.addEventListener("keydown", gameFunc.handleKeyPress);
+
+// #region for testing and debugging
+window.generateGhostAtParticularPoint =
+  ghostLogic.generateGhostAtParticularPoint;
+window.randomGhostDirection = ghostLogic.randomGhostDirection;
+
+window.generatePacmanAtParticularPoint =
+  pacmanLogic.generatePacmanAtParticularPoint;
+// #endregion for testing and debugging

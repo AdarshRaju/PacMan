@@ -24,7 +24,13 @@
       <div id="btnsContainer">
         <button id="loadGridPattern">Load Grid</button>
       </div>
-      <svg id="ghostSVG" width="150" height="150" viewBox="10 0 75 75">
+      <svg
+        id="ghostSVG"
+        class="ghosts"
+        width="150"
+        height="150"
+        viewBox="10 0 75 75"
+      >
         <path
           d="M 20 70 Q 10 10 50 10 T 80 70 C 70 60 60 80 50 70 S 30 80 20 70"
         >
@@ -37,10 +43,10 @@
             repeatCount="indefinite"
           />
         </path>
-        <circle cx="35" cy="30" r="5" fill="white" />
-        <circle cx="65" cy="30" r="5" fill="white" />
-        <circle cx="37" cy="30" r="1" fill="black" />
-        <circle cx="67" cy="30" r="1" fill="black" />
+        <circle class="eyesOuter" cx="35" cy="30" r="5" fill="white" />
+        <circle class="eyesOuter" cx="65" cy="30" r="5" fill="white" />
+        <circle class="eyesInner" cx="35" cy="30" r="1" fill="black" />
+        <circle class="eyesInner" cx="65" cy="30" r="1" fill="black" />
       </svg>
     </main>
     <footer></footer>
