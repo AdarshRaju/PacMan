@@ -3,18 +3,47 @@
     <meta charset="utf-8" />
     <meta name="description" content="PacMan by Adarsh" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Syne+Mono&family=Turret+Road:wght@200;300;400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+
     <title>Pac Man by Adarsh</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header></header>
     <main>
+      <div id="score">
+        <span>Score: </span>
+        <div id="scoreValue"></div>
+      </div>
       <div id="mainGridContainer"></div>
-      <div id="designBtnsContainer">
+      <div id="btnsContainer">
         <button id="loadGridPattern">Load Grid</button>
       </div>
+      <svg id="ghostSVG" width="150" height="150" viewBox="10 0 75 75">
+        <path
+          d="M 20 70 Q 10 10 50 10 T 80 70 C 70 60 60 80 50 70 S 30 80 20 70"
+        >
+          <animate
+            attributeName="d"
+            begin="0s"
+            dur="0.5s"
+            values="M 20 70 Q 10 10 50 10 T 80 70 C 70 60 60 80 50 70 C 40 60 30 80 20 70; M 20 70 Q 10 10
+          50 10 T 80 70 C 70 80 60 60 50 70 C 40 80 30 60 20 70; M 20 70 Q 10 10 50 10 T 80 70 C 70 60 60 80 50 70 C 40 60 30 80 20 70;"
+            repeatCount="indefinite"
+          />
+        </path>
+        <circle cx="35" cy="30" r="5" fill="white" />
+        <circle cx="65" cy="30" r="5" fill="white" />
+        <circle cx="37" cy="30" r="1" fill="black" />
+        <circle cx="67" cy="30" r="1" fill="black" />
+      </svg>
     </main>
     <footer></footer>
-    <script src="index.js"></script>
+    <script type="module" src="./index.js"></script>
   </body>
 </html>

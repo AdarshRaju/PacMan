@@ -1,0 +1,87 @@
+import * as docElems from "../globalVariables/docElems.js";
+import stateVars from "../globalVariables/stateVars.js";
+import * as pacmanLogic from "./pacmanLogic.js";
+
+// generation of HTML + CSS based main grid
+export function createMainGrid() {
+  const rowDiv = document.createElement("div");
+  rowDiv.classList.add("rows");
+  for (let j = 0; j < stateVars.gridsize; j++) {
+    const colDiv = document.createElement("div");
+    colDiv.classList.add("columns");
+    colDiv.classList.add("cells");
+    rowDiv.appendChild(colDiv);
+  }
+
+  for (let i = 0; i < stateVars.gridsize; i++) {
+    const cloneRoWDiv = rowDiv.cloneNode(true);
+    docElems.mainGridContainer.appendChild(cloneRoWDiv);
+  }
+}
+
+// generation of js based false-only array for the grid size
+export function generateFalseOnlyGrid() {
+  for (let i = 0; i < stateVars.gridsize; i++) {
+    let tempArr = [];
+    for (let j = 0; j < stateVars.gridsize; j++) {
+      tempArr.push(false);
+    }
+    stateVars.mainGridArray.push(tempArr);
+  }
+}
+
+// function to reset js game states as well as grid DOM elements
+export function resetBoard() {
+  // Reset all the state to 'false'
+  stateVars.pathArray = [...stateVars.mainGridArray];
+  // Reset all the class to initial state
+
+  stateVars.gameOver = false;
+  clearInterval(stateVars.pacmanInterval);
+  clearInterval(stateVars.ghostInterval);
+  stateVars.pacmanInterval = null;
+  docElems.mainGridContainer.innerHTML = "";
+  stateVars.score = 0;
+  docElems.scoreValue.innerHTML = "0";
+}
+
+// The grid file contents in pathCoord should be in [[row#,col#],[...],...] format
+export function populatePathStateArrayandDOM(pathCoord) {
+  pathCoord.forEach((pathItem) => {
+    stateVars.pathArray[pathItem[0]][pathItem[1]] = ["path"];
+  });
+
+  stateVars.pathArray.forEach((rowItem, rowIndex) => {
+    rowItem.forEach((colItem, colIndex) => {
+      if (colItem) {
+        docElems.mainGridContainer.children[rowIndex].children[
+          colIndex
+        ].classList.add("pathCell");
+      }
+    });
+  });
+}
+
+export function handleKeyPress(e) {
+  e.preventDefault();
+  clearInterval(stateVars.pacmanInterval);
+
+  switch (e.key) {
+    case "ArrowUp":
+      stateVars.pacmanInterval = setInterval(pacmanLogic.pacmanUp, 100);
+
+      break;
+    case "ArrowDown":
+      stateVars.pacmanInterval = setInterval(pacmanLogic.pacmanDown, 100);
+
+      break;
+    case "ArrowLeft":
+      stateVars.pacmanInterval = setInterval(pacmanLogic.pacmanLeft, 100);
+
+      break;
+    case "ArrowRight":
+      stateVars.pacmanInterval = setInterval(pacmanLogic.pacmanRight, 100);
+
+      break;
+  }
+}

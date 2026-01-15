@@ -1,21 +1,51 @@
+:root {
+  --food-color: rgb(235, 200, 4);
+  --path-cell-color: rgb(65, 65, 7);
+  --main-grid-background-color: rgb(218, 198, 198);
+}
+
 body {
   display: flex;
   flex-direction: column;
   justify-content: center;
   min-height: 90vh;
   background-color: green;
+  font-family: "Turret Road", sans-serif;
+  font-family: "Syne Mono", monospace;
+  font-family: "Syncopate", sans-serif;
 }
 
 header {
-  background-color: magenta;
+  background-color: rgb(225, 67, 10);
+}
+
+#score {
+  display: flex;
+  font-size: 20px;
+  margin-left: 200px;
+  margin-bottom: 20px;
+  align-items: baseline;
+  /* font-family: "Turret Road", sans-serif; */
+}
+
+#scoreValue {
+  font-size: larger;
+  font-weight: bolder;
+  margin-left: 5px;
+  align-self: flex-end;
+  /* margin-bottom: 5px; */
+  font-family: "Syne Mono", monospace;
+  font-family: "Turret Road", sans-serif;
 }
 
 #mainGridContainer {
   height: 500px;
   width: 500px;
-  background-color: red;
+  margin-left: 20px;
+  background-color: var(--main-grid-background-color);
   display: flex;
   flex-direction: column;
+  border-radius: 5%;
 }
 
 .rows {
@@ -27,14 +57,15 @@ header {
 .cells {
   height: 100%;
   width: 100%;
-  border: solid black 1px;
+  border: solid transparent 1px;
 }
 
 .pathCell {
-  background-color: yellow;
+  background-color: var(--path-cell-color);
+  border: solid transparent 1px;
 }
 
-#designBtnsContainer {
+#btnsContainer {
   width: 500px;
   display: flex;
   justify-content: space-around;
@@ -43,31 +74,47 @@ header {
 
 button {
   padding: 10px 15px;
-  font-weight: bold;
+  font-weight: bolder;
+  font-family: "Turret Road", sans-serif;
+  font-family: "Syncopate", sans-serif;
 }
 
 .food {
-  background: radial-gradient(yellow 0%, transparent 50%);
+  position: relative;
+}
+
+.food::before {
+  position: absolute;
+  content: "";
+  right: 25%;
+  bottom: 25%;
+  height: 50%;
+  width: 50%;
+  background: radial-gradient(var(--food-color) 0%, transparent 50%);
 }
 
 .pacman {
   border-radius: 50%;
-  /* border: none; */
-  background-image: conic-gradient(
-    yellow 45deg,
-    red 45deg,
-    red 135deg,
-    yellow 135deg
-  );
-  animation: pacman-down 0.35s linear infinite;
+
+  height: 100%;
+  width: 100%;
+
+  background: conic-gradient(
+      yellow 45deg,
+      var(--path-cell-color) 45deg,
+      var(--path-cell-color) 135deg,
+      yellow 135deg
+    ),
+    var(--path-cell-color);
+  animation: pacman-right 0.35s linear infinite;
 }
 
 @keyframes pacman-right {
   from {
     background-image: conic-gradient(
       yellow 45deg,
-      red 45deg,
-      red 135deg,
+      var(--path-cell-color) 45deg,
+      var(--path-cell-color) 135deg,
       yellow 135deg
     );
   }
@@ -85,8 +132,8 @@ button {
   from {
     background-image: conic-gradient(
       yellow 225deg,
-      red 225deg,
-      red 315deg,
+      var(--path-cell-color) 225deg,
+      var(--path-cell-color) 315deg,
       yellow 315deg
     );
   }
@@ -103,11 +150,11 @@ button {
 @keyframes pacman-up {
   from {
     background-image: conic-gradient(
-      red 0deg,
-      red 45deg,
+      var(--path-cell-color) 0deg,
+      var(--path-cell-color) 45deg,
       yellow 45deg,
       yellow 315deg,
-      red 315deg
+      var(--path-cell-color) 315deg
     );
   }
   to {
@@ -124,8 +171,8 @@ button {
   from {
     background-image: conic-gradient(
       yellow 135deg,
-      red 135deg,
-      red 225deg,
+      var(--path-cell-color) 135deg,
+      var(--path-cell-color) 225deg,
       yellow 225deg
     );
   }
@@ -137,4 +184,14 @@ button {
       yellow 135deg
     );
   }
+}
+
+#ghostSVG {
+  fill: blue;
+  stroke: black;
+  stroke-width: 2;
+  animation: ghost 0.35s linear infinite;
+}
+
+@keyframes ghost {
 }
