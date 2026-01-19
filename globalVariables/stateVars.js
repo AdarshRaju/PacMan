@@ -1,6 +1,12 @@
 export default {
   // The gridsize is the number of cells in each direction (x and y) of the game board
   gridsize: 25,
+  // pacmanSpeed is the speed at which pacman moves through the grid
+  pacmanSpeed: 100,
+  // ghostNormalSpeed is the speed at which ghost moves through the grid when pacman is not in sight
+  ghostNormalSpeed: 500,
+  // ghostLOSSpeed is the speed at which ghost moves through the grid when pacman is in sight
+  ghostLOSSpeed: 100,
   // mainGridArray will have false only values in a gridsize*gridsize 2D nested array
   mainGridArray: [],
   // pathArray will have the ["path"] item added at the coordinates received for grid design
@@ -19,9 +25,9 @@ export default {
   score: 0,
   // gameOver state is reached by eating all the food or touching a ghost
   gameOver: true,
-  // pacmanInterval is the speed of movement of pacman along a straight path
+  // pacmanInterval is used for assigning a setInterval function to the movement of pacman along a straight path
   pacmanInterval: null,
-  // ghostInterval is the speed of movement of ghost along a straight path
+  // ghostInterval is used for assigning a setInterval function to the movement of ghost along a straight path
   ghostInterval: null,
   // If pacman is lin the general line of sight of ghost in ghost's direction of travel
   pacmanInSight: false,

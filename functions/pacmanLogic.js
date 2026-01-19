@@ -20,7 +20,17 @@ function addPacmanToDOM() {
   ].appendChild(pacmanDiv);
 }
 
-function removePacmanFromState() {
+export function addPacmanGameOverToDOM() {
+  const pacmanDiv = document.createElement("div");
+
+  pacmanDiv.classList.add("pacmanGameOver");
+
+  docElems.mainGridContainer.children[stateVars.currentPacmanCoor[0]].children[
+    stateVars.currentPacmanCoor[1]
+  ].appendChild(pacmanDiv);
+}
+
+export function removePacmanFromState() {
   const pacInd =
     stateVars.pathArray[stateVars.currentPacmanCoor[0]][
       stateVars.currentPacmanCoor[1]
@@ -32,7 +42,7 @@ function removePacmanFromState() {
   }
 }
 
-function removePacmanFromDOM() {
+export function removePacmanFromDOM() {
   document.querySelector(".pacman")?.remove();
 }
 
@@ -64,126 +74,229 @@ export function populatePacmaninArrayandDOM() {
 }
 
 function updatePacmanArrayAndDOM() {
-  removePacmanFromState();
-
-  removePacmanFromDOM();
-
-  // Set the new pacman coordinate based on direction
-  switch (stateVars.pacmanDirection) {
-    case "Up":
-      stateVars.currentPacmanCoor = [
-        stateVars.currentPacmanCoor[0] - 1,
-        stateVars.currentPacmanCoor[1],
-      ];
-      break;
-    case "Down":
-      stateVars.currentPacmanCoor = [
-        stateVars.currentPacmanCoor[0] + 1,
-        stateVars.currentPacmanCoor[1],
-      ];
-      break;
-    case "Left":
-      stateVars.currentPacmanCoor = [
-        stateVars.currentPacmanCoor[0],
-        stateVars.currentPacmanCoor[1] - 1,
-      ];
-      break;
-    case "Right":
-      stateVars.currentPacmanCoor = [
-        stateVars.currentPacmanCoor[0],
-        stateVars.currentPacmanCoor[1] + 1,
-      ];
-      break;
-  }
-
-  let updatedPacmanCell =
-    stateVars.pathArray[stateVars.currentPacmanCoor[0]][
-      stateVars.currentPacmanCoor[1]
-    ];
-  // If food is in the new cell without a ghost, remove 'food' from state array and DOM and update score
   if (!stateVars.gameOver) {
-    if (updatedPacmanCell.includes("food")) {
-      // remove food in state array and DOM and increase the score
-      const foodInd = updatedPacmanCell.indexOf("food");
-      updatedPacmanCell.splice(foodInd, 1);
-      docElems.mainGridContainer.children[
-        stateVars.currentPacmanCoor[0]
-      ].children[stateVars.currentPacmanCoor[1]].classList.remove("food");
-      stateVars.score += 1;
-      docElems.scoreValue.innerHTML = stateVars.score;
+    removePacmanFromState();
+
+    removePacmanFromDOM();
+
+    let prevPacmanCoord = [...stateVars.currentPacmanCoor];
+
+    // Set the new pacman coordinate based on direction
+    switch (stateVars.pacmanDirection) {
+      case "Up":
+        // check for portal condition at top-most row
+        if (stateVars.currentPacmanCoor[0] === 0) {
+          stateVars.currentPacmanCoor = [
+            stateVars.gridsize - 1,
+            stateVars.currentPacmanCoor[1],
+          ];
+        } else {
+          stateVars.currentPacmanCoor = [
+            stateVars.currentPacmanCoor[0] - 1,
+            stateVars.currentPacmanCoor[1],
+          ];
+        }
+
+        break;
+      case "Down":
+        // check for portal condition at bottom-most row
+        if (stateVars.currentPacmanCoor[0] === stateVars.gridsize - 1) {
+          stateVars.currentPacmanCoor = [0, stateVars.currentPacmanCoor[1]];
+        } else {
+          stateVars.currentPacmanCoor = [
+            stateVars.currentPacmanCoor[0] + 1,
+            stateVars.currentPacmanCoor[1],
+          ];
+        }
+
+        break;
+      case "Left":
+        // check for portal condition at left-most row
+        if (stateVars.currentPacmanCoor[1] === 0) {
+          stateVars.currentPacmanCoor = [
+            stateVars.currentPacmanCoor[0],
+            stateVars.gridsize - 1,
+          ];
+        } else {
+          stateVars.currentPacmanCoor = [
+            stateVars.currentPacmanCoor[0],
+            stateVars.currentPacmanCoor[1] - 1,
+          ];
+        }
+
+        break;
+      case "Right":
+        // check for portal condition at right-most row
+        if (stateVars.currentPacmanCoor[1] === stateVars.gridsize - 1) {
+          stateVars.currentPacmanCoor = [stateVars.currentPacmanCoor[0], 0];
+        } else {
+          stateVars.currentPacmanCoor = [
+            stateVars.currentPacmanCoor[0],
+            stateVars.currentPacmanCoor[1] + 1,
+          ];
+        }
+
+        break;
     }
 
-    updatedPacmanCell.push("pacman");
+    let updatedPacmanCell =
+      stateVars.pathArray[stateVars.currentPacmanCoor[0]][
+        stateVars.currentPacmanCoor[1]
+      ];
 
-    addPacmanToDOM();
+    if (updatedPacmanCell.includes("ghost")) {
+      stateVars.gameOver = true;
+      clearInterval(stateVars.pacmanInterval);
+      clearInterval(stateVars.ghostInterval);
+      stateVars.currentPacmanCoor = prevPacmanCoord;
+      updatedPacmanCell.push("pacmanGameOver");
+
+      addPacmanGameOverToDOM();
+    } else {
+      // If food is in the new cell without a ghost, remove 'food' from state array and DOM and update score
+
+      if (updatedPacmanCell.includes("food")) {
+        // remove food in state array and DOM and increase the score
+        const foodInd = updatedPacmanCell.indexOf("food");
+        updatedPacmanCell.splice(foodInd, 1);
+        docElems.mainGridContainer.children[
+          stateVars.currentPacmanCoor[0]
+        ].children[stateVars.currentPacmanCoor[1]].classList.remove("food");
+        stateVars.score += 1;
+        docElems.scoreValue.innerHTML = stateVars.score;
+      }
+      updatedPacmanCell.push("pacman");
+
+      addPacmanToDOM();
+    }
   }
 }
 
-export function pacmanUp() {
-  const checkUp = stateVars.pathCoord.some(([row, col]) => {
+function pacmanNormalUpCheck() {
+  return stateVars.pathCoord.some(([row, col]) => {
     return (
       row === stateVars.currentPacmanCoor[0] - 1 &&
       col === stateVars.currentPacmanCoor[1]
     );
   });
+}
+function pacmanUpPortalCheck() {
+  if (
+    stateVars.currentPacmanCoor[0] === 0 &&
+    stateVars.pathCoord.some(([row, col]) => {
+      return (
+        row === stateVars.gridsize - 1 && col === stateVars.currentPacmanCoor[1]
+      );
+    })
+  ) {
+    return true;
+  }
+}
 
+export function pacmanUp() {
+  const checkUp = pacmanNormalUpCheck() || pacmanUpPortalCheck();
   if (checkUp) {
     stateVars.pacmanDirection = "Up";
 
     updatePacmanArrayAndDOM();
 
-    docElems.pacman[0].style.animationName = "pacman-up";
+    docElems.pacman[0] &&
+      (docElems.pacman[0].style.animationName = "pacman-up");
   } else {
   }
 }
 
-export function pacmanDown() {
-  const checkDown = stateVars.pathCoord.some(([row, col]) => {
+function pacmanNormalDownCheck() {
+  return stateVars.pathCoord.some(([row, col]) => {
     return (
       row === stateVars.currentPacmanCoor[0] + 1 &&
       col === stateVars.currentPacmanCoor[1]
     );
   });
+}
+function pacmanDownPortalCheck() {
+  if (
+    stateVars.currentPacmanCoor[0] === stateVars.gridsize - 1 &&
+    stateVars.pathCoord.some(([row, col]) => {
+      return row === 0 && col === stateVars.currentPacmanCoor[1];
+    })
+  ) {
+    return true;
+  }
+}
+export function pacmanDown() {
+  const checkDown = pacmanNormalDownCheck() || pacmanDownPortalCheck();
 
   if (checkDown) {
     stateVars.pacmanDirection = "Down";
 
     updatePacmanArrayAndDOM();
-    docElems.pacman[0].style.animationName = "pacman-down";
+    docElems.pacman[0] &&
+      (docElems.pacman[0].style.animationName = "pacman-down");
   } else {
   }
 }
 
-export function pacmanLeft() {
-  const checkLeft = stateVars.pathCoord.some(([row, col]) => {
+function pacmanNormalLeftCheck() {
+  return stateVars.pathCoord.some(([row, col]) => {
     return (
       row === stateVars.currentPacmanCoor[0] &&
       col === stateVars.currentPacmanCoor[1] - 1
     );
   });
+}
+function pacmanLeftPortalCheck() {
+  if (
+    stateVars.currentPacmanCoor[1] === 0 &&
+    stateVars.pathCoord.some(([row, col]) => {
+      return (
+        row === stateVars.currentPacmanCoor[0] && col === stateVars.gridsize - 1
+      );
+    })
+  ) {
+    return true;
+  }
+}
+
+export function pacmanLeft() {
+  const checkLeft = pacmanNormalLeftCheck() || pacmanLeftPortalCheck();
 
   if (checkLeft) {
     stateVars.pacmanDirection = "Left";
 
     updatePacmanArrayAndDOM();
-    docElems.pacman[0].style.animationName = "pacman-left";
+    docElems.pacman[0] &&
+      (docElems.pacman[0].style.animationName = "pacman-left");
   } else {
   }
 }
-
-export function pacmanRight() {
-  const checkRight = stateVars.pathCoord.some(([row, col]) => {
+function pacmanNormalRightCheck() {
+  return stateVars.pathCoord.some(([row, col]) => {
     return (
       row === stateVars.currentPacmanCoor[0] &&
       col === stateVars.currentPacmanCoor[1] + 1
     );
   });
+}
+function pacmanRightPortalCheck() {
+  if (
+    stateVars.currentPacmanCoor[1] === stateVars.gridsize - 1 &&
+    stateVars.pathCoord.some(([row, col]) => {
+      return row === stateVars.currentPacmanCoor[0] && col === 0;
+    })
+  ) {
+    return true;
+  }
+}
+export function pacmanRight() {
+  const checkRight = pacmanRightPortalCheck() || pacmanNormalRightCheck();
 
   if (checkRight) {
     stateVars.pacmanDirection = "Right";
 
     updatePacmanArrayAndDOM();
-    docElems.pacman[0].style.animationName = "pacman-right";
+    docElems.pacman[0] &&
+      (docElems.pacman[0].style.animationName = "pacman-right");
   } else {
   }
 }

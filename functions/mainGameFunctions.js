@@ -68,19 +68,31 @@ export function handleKeyPress(e) {
 
   switch (e.key) {
     case "ArrowUp":
-      stateVars.pacmanInterval = setInterval(pacmanLogic.pacmanUp, 100);
+      stateVars.pacmanInterval = setInterval(
+        pacmanLogic.pacmanUp,
+        stateVars.pacmanSpeed,
+      );
 
       break;
     case "ArrowDown":
-      stateVars.pacmanInterval = setInterval(pacmanLogic.pacmanDown, 100);
+      stateVars.pacmanInterval = setInterval(
+        pacmanLogic.pacmanDown,
+        stateVars.pacmanSpeed,
+      );
 
       break;
     case "ArrowLeft":
-      stateVars.pacmanInterval = setInterval(pacmanLogic.pacmanLeft, 100);
+      stateVars.pacmanInterval = setInterval(
+        pacmanLogic.pacmanLeft,
+        stateVars.pacmanSpeed,
+      );
 
       break;
     case "ArrowRight":
-      stateVars.pacmanInterval = setInterval(pacmanLogic.pacmanRight, 100);
+      stateVars.pacmanInterval = setInterval(
+        pacmanLogic.pacmanRight,
+        stateVars.pacmanSpeed,
+      );
 
       break;
   }

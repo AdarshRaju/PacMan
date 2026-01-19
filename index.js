@@ -51,8 +51,12 @@ document.addEventListener("keydown", gameFunc.handleKeyPress);
 // #region for testing and debugging
 window.generateGhostAtParticularPoint =
   ghostLogic.generateGhostAtParticularPoint;
-window.randomGhostDirection = ghostLogic.randomGhostDirection;
+window.randomGhostDirection = ghostLogic.setRandomGhostDirection;
 
 window.generatePacmanAtParticularPoint =
   pacmanLogic.generatePacmanAtParticularPoint;
+
+window.ghostLOS = ghostLogic.checkForGhostLineOfSight;
+
+window.stateVars = stateVars;
 // #endregion for testing and debugging

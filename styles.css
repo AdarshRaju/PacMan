@@ -99,7 +99,8 @@ button {
   height: 100%;
   width: 100%;
 
-  background: conic-gradient(
+  background:
+    conic-gradient(
       yellow 45deg,
       var(--path-cell-color) 45deg,
       var(--path-cell-color) 135deg,
@@ -194,4 +195,64 @@ button {
 }
 
 @keyframes ghost {
+}
+
+.pacmanGameOver {
+  border-radius: 50%;
+
+  height: 100%;
+  width: 100%;
+
+  background-image: conic-gradient(
+    yellow 45deg,
+    yellow 45deg,
+    yellow 135deg,
+    yellow 135deg
+  );
+
+  animation: pacman-gameOver 2s linear infinite;
+}
+
+@keyframes pacman-gameOver {
+  0% {
+    background-image: conic-gradient(
+      yellow 45deg,
+      yellow 45deg,
+      yellow 135deg,
+      yellow 135deg
+    );
+  }
+  25% {
+    background-image: conic-gradient(
+      yellow 45deg,
+      var(--path-cell-color) 45deg,
+      var(--path-cell-color) 135deg,
+      yellow 135deg
+    );
+  }
+  50% {
+    background-image: conic-gradient(
+      var(--path-cell-color) 45deg,
+      var(--path-cell-color) 45deg,
+      var(--path-cell-color) 180deg,
+      yellow 180deg
+    );
+  }
+
+  75% {
+    background-image: conic-gradient(
+      var(--path-cell-color) 225deg,
+      yellow 225deg,
+      yellow 315deg,
+      var(--path-cell-color) 315deg
+    );
+  }
+  100% {
+    background-image: conic-gradient(
+      var(--path-cell-color) 45deg,
+      var(--path-cell-color) 45deg,
+      var(--path-cell-color) 135deg,
+      var(--path-cell-color) 135deg
+    );
+  }
 }
