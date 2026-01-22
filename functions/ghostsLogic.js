@@ -2,145 +2,223 @@ import * as docElems from "../globalVariables/docElems.js";
 import stateVars from "../globalVariables/stateVars.js";
 import * as pacman from "./pacmanLogic.js";
 
-function addGhostToState() {
+function addGhostToState(ghostNumber) {
   let newGhostCell =
-    stateVars.pathArray[stateVars.currentGhostCoor[0]][
-      stateVars.currentGhostCoor[1]
+    stateVars.pathArray[stateVars.currentGhostCoor[ghostNumber][0]][
+      stateVars.currentGhostCoor[ghostNumber][1]
     ];
 
-  newGhostCell.push("ghost");
+  newGhostCell.push(`ghost${ghostNumber}`);
 }
 
-function addGhostToDOM() {
-  const ghostSVG = docElems.ghostSVG.cloneNode(true);
+function addGhostToBigDisplayDOM(ghostNumber) {
+  const ghostSVGDisplay = docElems.ghostSVG.cloneNode(true);
+  ghostSVGDisplay.classList.add(`ghosts${ghostNumber}`);
+  ghostSVGDisplay.style.display = "block";
+  switch (ghostNumber) {
+    case 0:
+      ghostSVGDisplay.style.fill = "orange";
+      break;
+    case 1:
+      ghostSVGDisplay.style.fill = "green";
+      break;
+    case 2:
+      ghostSVGDisplay.style.fill = "blue";
+      break;
+    case 3:
+      ghostSVGDisplay.style.fill = "purple";
+      break;
+  }
 
+  docElems.bigGhostsDisplay.appendChild(ghostSVGDisplay);
+}
+
+function addGhostToBoardDOM(ghostNumber) {
+  const ghostSVGDisplay = docElems.ghostSVG.cloneNode(true);
+  ghostSVGDisplay.classList.add(`ghosts${ghostNumber}`);
+  ghostSVGDisplay.style.display = "block";
+  switch (ghostNumber) {
+    case 0:
+      ghostSVGDisplay.style.fill = "orange";
+      break;
+    case 1:
+      ghostSVGDisplay.style.fill = "green";
+      break;
+    case 2:
+      ghostSVGDisplay.style.fill = "blue";
+      break;
+    case 3:
+      ghostSVGDisplay.style.fill = "purple";
+      break;
+  }
+
+  const ghostSVGInBoard = ghostSVGDisplay.cloneNode(true);
+
+  // Set the width and height of the ghost svg to 88% of the corresponding values of each path cell
   docElems.pathCells[0] &&
-    ghostSVG.setAttribute(
+    ghostSVGInBoard.setAttribute(
       "width",
       docElems.pathCells[0].getBoundingClientRect().width * 0.88,
     );
   docElems.pathCells[0] &&
-    ghostSVG.setAttribute(
+    ghostSVGInBoard.setAttribute(
       "height",
       docElems.pathCells[0].getBoundingClientRect().height * 0.88,
     );
-  ghostSVG.style.display = "block";
-  ghostSVG.style.fill = "orange";
-  ghostSVG.id = "ghostInBoard";
-  docElems.mainGridContainer.children[stateVars.currentGhostCoor[0]].children[
-    stateVars.currentGhostCoor[1]
-  ].appendChild(ghostSVG);
+
+  ghostSVGInBoard.id = `ghostInBoard${ghostNumber}`;
+  docElems.mainGridContainer.children[
+    stateVars.currentGhostCoor[ghostNumber][0]
+  ].children[stateVars.currentGhostCoor[ghostNumber][1]].appendChild(
+    ghostSVGInBoard,
+  );
 }
 
-function removeGhostFromState() {
-  const ghostInd =
-    stateVars.pathArray[stateVars.currentGhostCoor[0]][
-      stateVars.currentGhostCoor[1]
-    ].indexOf("ghost");
+function removeGhostFromState(ghostNumber) {
+  const ghostInd = stateVars.pathArray[
+    stateVars.currentGhostCoor[ghostNumber][0]
+  ][stateVars.currentGhostCoor[ghostNumber][1]].indexOf(`ghost${ghostNumber}`);
   if (ghostInd > -1) {
-    stateVars.pathArray[stateVars.currentGhostCoor[0]][
-      stateVars.currentGhostCoor[1]
+    stateVars.pathArray[stateVars.currentGhostCoor[ghostNumber][0]][
+      stateVars.currentGhostCoor[ghostNumber][1]
     ].splice(ghostInd, 1);
   }
 }
 
-function removeGhostFromDOM() {
-  document.querySelector(".ghosts")?.remove();
+function removeGhostFromDOM(ghostNumber) {
+  document.querySelector(`#ghostInBoard${ghostNumber}`).remove();
 }
 
 // updateGhostAnimationDirection changes the way the ghost's eyes are aligned (indicates movement direction)
-function updateGhostAnimationDirection() {
-  switch (stateVars.ghostDirection) {
+function updateGhostAnimationDirection(ghostNumber) {
+  switch (stateVars.ghostDirection[ghostNumber]) {
     case "Up":
-      [...docElems.ghosts].forEach((ghost) => {
-        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cx", 35);
-        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cy", 28);
-        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cx", 65);
-        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cy", 28);
+      console.log(
+        "stateVars.ghostDirection[ghostNumber] during case UP was activated in animate function is: ",
+        stateVars.ghostDirection[ghostNumber],
+      );
+
+      [...docElems.ghosts(ghostNumber)].forEach((ghost) => {
+        console.log(
+          "ghost element returned in docElems.ghosts(ghostNumber) is: ",
+          ghost,
+        );
+        const ghostUp = ghost.querySelectorAll(".eyesInner");
+        ghostUp[0].setAttribute("cx", 35);
+        ghostUp[0].setAttribute("cy", 28);
+        ghostUp[1].setAttribute("cx", 65);
+        ghostUp[1].setAttribute("cy", 28);
       });
       break;
     case "Down":
-      [...docElems.ghosts].forEach((ghost) => {
-        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cx", 35);
-        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cy", 32);
-        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cx", 65);
-        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cy", 32);
+      console.log(
+        "stateVars.ghostDirection[ghostNumber] during case DOWN was activated in animate function is: ",
+        stateVars.ghostDirection[ghostNumber],
+      );
+
+      [...docElems.ghosts(ghostNumber)].forEach((ghost) => {
+        const ghostDown = ghost.querySelectorAll(".eyesInner");
+        ghostDown[0].setAttribute("cx", 35);
+        ghostDown[0].setAttribute("cy", 32);
+        ghostDown[1].setAttribute("cx", 65);
+        ghostDown[1].setAttribute("cy", 32);
       });
       break;
     case "Left":
-      [...docElems.ghosts].forEach((ghost) => {
-        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cx", 33);
-        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cy", 30);
-        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cx", 63);
-        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cy", 30);
+      console.log(
+        "stateVars.ghostDirection[ghostNumber] during case LEFT was activated in animate function is: ",
+        stateVars.ghostDirection[ghostNumber],
+      );
+      [...docElems.ghosts(ghostNumber)].forEach((ghost) => {
+        const ghostLeft = ghost.querySelectorAll(".eyesInner");
+        ghostLeft[0].setAttribute("cx", 33);
+        ghostLeft[0].setAttribute("cy", 30);
+        ghostLeft[1].setAttribute("cx", 63);
+        ghostLeft[1].setAttribute("cy", 30);
       });
       break;
     case "Right":
-      [...docElems.ghosts].forEach((ghost) => {
-        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cx", 37);
-        ghost.querySelectorAll(".eyesInner")[0].setAttribute("cy", 30);
-        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cx", 67);
-        ghost.querySelectorAll(".eyesInner")[1].setAttribute("cy", 30);
+      console.log(
+        "stateVars.ghostDirection[ghostNumber] during case RIGHT was activated in animate function is: ",
+        stateVars.ghostDirection[ghostNumber],
+      );
+      [...docElems.ghosts(ghostNumber)].forEach((ghost) => {
+        const ghostRight = ghost.querySelectorAll(".eyesInner");
+        ghostRight[0].setAttribute("cx", 37);
+        ghostRight[0].setAttribute("cy", 30);
+        ghostRight[1].setAttribute("cx", 67);
+        ghostRight[1].setAttribute("cy", 30);
       });
       break;
   }
-  [...docElems.ghosts];
 }
 
 // populateGhostinArrayandDOM() is for the initial placement of ghost in a random path cell in the board
-export function populateGhostinArrayandDOM() {
-  let randomIndex = Math.floor(Math.random() * stateVars.pathCoord.length);
+export function populateGhostinArrayandDOM(ghostNumber) {
+  // filteredArray returns only the coordinates not occupied by pacman or other ghosts
+  let filteredArray = stateVars.pathCoord.filter(([row, col]) => {
+    return !(
+      (row === stateVars.currentPacmanCoor[0] &&
+        col === stateVars.currentPacmanCoor[1]) ||
+      stateVars.currentGhostCoor[ghostNumber]?.some(
+        ([ghostNumRow, ghostNumCol]) => {
+          return row === ghostNumRow && col === ghostNumCol;
+        },
+      )
+    );
+  });
 
-  // reassign randomIndex if pacman is already in the path cell
-  while (
-    stateVars.pathCoord[randomIndex].toString() ===
-    stateVars.currentPacmanCoor.toString()
-  ) {
-    randomIndex = Math.floor(Math.random() * stateVars.pathCoord.length);
-  }
-  stateVars.currentGhostCoor = stateVars.pathCoord[randomIndex];
+  let randomIndex = Math.floor(Math.random() * filteredArray.length);
+  stateVars.currentGhostCoor[ghostNumber] = filteredArray[randomIndex];
 
-  addGhostToState();
-  addGhostToDOM();
-  setRandomGhostDirection();
-  updateGhostArrayAndDOM();
-  // ghostPathFindingLogic();
+  addGhostToState(ghostNumber);
+
+  addGhostToBigDisplayDOM(ghostNumber);
+  addGhostToBoardDOM(ghostNumber);
+  setRandomGhostDirection(ghostNumber);
+  requestAnimationFrame(() => updateGhostArrayAndDOM(ghostNumber));
 }
 
-function setGhostSpeed() {
-  if (!stateVars.pacmanInSight) {
-    stateVars.ghostInterval = setInterval(
+function setGhostSpeed(ghostNumber) {
+  if (!stateVars.pacmanInSight[ghostNumber]) {
+    stateVars.ghostInterval[ghostNumber] = setInterval(
       updateGhostArrayAndDOM,
+
       stateVars.ghostNormalSpeed,
+      ghostNumber,
     );
   } else {
-    stateVars.ghostInterval = setInterval(
+    stateVars.ghostInterval[ghostNumber] = setInterval(
       updateGhostArrayAndDOM,
+
       stateVars.ghostLOSSpeed,
+      ghostNumber,
     );
   }
 }
-function ghostPathFindingLogic() {
-  clearInterval(stateVars.ghostInterval);
-  const dirArr = getAvailableDirectionsGhost();
+function ghostPathFindingLogic(ghostNumber) {
+  clearInterval(stateVars.ghostInterval[ghostNumber]);
+  const dirArr = getAvailableDirectionsGhost(ghostNumber);
   // The ghost will continue moving forward unless it hits a wall or finds an alternative path
-  switch (stateVars.ghostDirection) {
+  switch (stateVars.ghostDirection[ghostNumber]) {
     case "Up":
       if (
         (dirArr.includes(ghostRight) ||
           dirArr.includes(ghostLeft) ||
           !dirArr.includes(ghostUp)) &&
-        !stateVars.pacmanInSight
+        !stateVars.pacmanInSight[ghostNumber]
       ) {
-        setRandomGhostDirection();
-        stateVars.ghostInterval = setInterval(
+        setRandomGhostDirection(ghostNumber);
+        stateVars.ghostInterval[ghostNumber] = setInterval(
           updateGhostArrayAndDOM,
+
           stateVars.ghostNormalSpeed,
+          ghostNumber,
         );
       } else {
-        ghostUp();
+        ghostUp(ghostNumber);
 
-        setGhostSpeed();
+        setGhostSpeed(ghostNumber);
       }
 
       break;
@@ -149,17 +227,19 @@ function ghostPathFindingLogic() {
         (dirArr.includes(ghostRight) ||
           dirArr.includes(ghostLeft) ||
           !dirArr.includes(ghostDown)) &&
-        !stateVars.pacmanInSight
+        !stateVars.pacmanInSight[ghostNumber]
       ) {
-        setRandomGhostDirection();
-        stateVars.ghostInterval = setInterval(
+        setRandomGhostDirection(ghostNumber);
+        stateVars.ghostInterval[ghostNumber] = setInterval(
           updateGhostArrayAndDOM,
+
           stateVars.ghostNormalSpeed,
+          ghostNumber,
         );
       } else {
-        ghostDown();
+        ghostDown(ghostNumber);
 
-        setGhostSpeed();
+        setGhostSpeed(ghostNumber);
       }
       break;
     case "Left":
@@ -167,17 +247,19 @@ function ghostPathFindingLogic() {
         (dirArr.includes(ghostUp) ||
           dirArr.includes(ghostDown) ||
           !dirArr.includes(ghostLeft)) &&
-        !stateVars.pacmanInSight
+        !stateVars.pacmanInSight[ghostNumber]
       ) {
-        setRandomGhostDirection();
-        stateVars.ghostInterval = setInterval(
+        setRandomGhostDirection(ghostNumber);
+        stateVars.ghostInterval[ghostNumber] = setInterval(
           updateGhostArrayAndDOM,
+
           stateVars.ghostNormalSpeed,
+          ghostNumber,
         );
       } else {
-        ghostLeft();
+        ghostLeft(ghostNumber);
 
-        setGhostSpeed();
+        setGhostSpeed(ghostNumber);
       }
 
       break;
@@ -186,17 +268,19 @@ function ghostPathFindingLogic() {
         (dirArr.includes(ghostUp) ||
           dirArr.includes(ghostDown) ||
           !dirArr.includes(ghostRight)) &&
-        !stateVars.pacmanInSight
+        !stateVars.pacmanInSight[ghostNumber]
       ) {
-        setRandomGhostDirection();
-        stateVars.ghostInterval = setInterval(
+        setRandomGhostDirection(ghostNumber);
+        stateVars.ghostInterval[ghostNumber] = setInterval(
           updateGhostArrayAndDOM,
+
           stateVars.ghostNormalSpeed,
+          ghostNumber,
         );
       } else {
-        ghostRight();
+        ghostRight(ghostNumber);
 
-        setGhostSpeed();
+        setGhostSpeed(ghostNumber);
       }
 
       break;
@@ -204,50 +288,63 @@ function ghostPathFindingLogic() {
 }
 
 // If pacman is in the direct line of sight of a ghost, it will start moving faster
-export function checkForGhostLineOfSight() {
-  if (stateVars.currentGhostCoor[0] === stateVars.currentPacmanCoor[0]) {
-    switch (stateVars.ghostDirection) {
+export function checkForGhostLineOfSight(ghostNumber) {
+  if (
+    stateVars.currentGhostCoor[ghostNumber][0] ===
+    stateVars.currentPacmanCoor[0]
+  ) {
+    switch (stateVars.ghostDirection[ghostNumber]) {
       case "Right":
-        if (stateVars.currentGhostCoor[1] < stateVars.currentPacmanCoor[1]) {
+        if (
+          stateVars.currentGhostCoor[ghostNumber][1] <
+          stateVars.currentPacmanCoor[1]
+        ) {
           let localCellCount = 0;
           for (
-            let i = stateVars.currentGhostCoor[1];
+            let i = stateVars.currentGhostCoor[ghostNumber][1];
             i < stateVars.currentPacmanCoor[1];
             i++
           ) {
             if (
               stateVars.pathCoord.some(([row, col]) => {
-                return row === stateVars.currentGhostCoor[0] && col === i;
+                return (
+                  row === stateVars.currentGhostCoor[ghostNumber][0] &&
+                  col === i
+                );
               })
             ) {
               localCellCount += 1;
             }
           }
-          console.log("localCellCount returned is: ", localCellCount);
+
           if (
             localCellCount ===
             parseInt(stateVars.currentPacmanCoor[1]) -
-              parseInt(stateVars.currentGhostCoor[1])
+              parseInt(stateVars.currentGhostCoor[ghostNumber][1])
           ) {
-            console.log("LOS right true condition was activated");
-            stateVars.pacmanInSight = true;
+            stateVars.pacmanInSight[ghostNumber] = true;
           }
         } else {
-          console.log("LOS right false condition was activated");
-          stateVars.pacmanInSight = false;
+          stateVars.pacmanInSight[ghostNumber] = false;
         }
         break;
       case "Left":
-        if (stateVars.currentGhostCoor[1] > stateVars.currentPacmanCoor[1]) {
+        if (
+          stateVars.currentGhostCoor[ghostNumber][1] >
+          stateVars.currentPacmanCoor[1]
+        ) {
           let localCellCount = 0;
           for (
-            let i = stateVars.currentGhostCoor[1];
+            let i = stateVars.currentGhostCoor[ghostNumber][1];
             i > stateVars.currentPacmanCoor[1];
             i--
           ) {
             if (
               stateVars.pathCoord.some(([row, col]) => {
-                return row === stateVars.currentGhostCoor[0] && col === i;
+                return (
+                  row === stateVars.currentGhostCoor[ghostNumber][0] &&
+                  col === i
+                );
               })
             ) {
               localCellCount += 1;
@@ -256,65 +353,78 @@ export function checkForGhostLineOfSight() {
 
           if (
             localCellCount ===
-            stateVars.currentGhostCoor[1] - stateVars.currentPacmanCoor[1]
+            stateVars.currentGhostCoor[ghostNumber][1] -
+              stateVars.currentPacmanCoor[1]
           ) {
-            console.log("LOS left true condition was activated");
-            stateVars.pacmanInSight = true;
+            stateVars.pacmanInSight[ghostNumber] = true;
           }
         } else {
-          console.log("LOS left false condition was activated");
-          stateVars.pacmanInSight = false;
+          stateVars.pacmanInSight[ghostNumber] = false;
         }
         break;
       case "Up":
-        stateVars.pacmanInSight = false;
+        stateVars.pacmanInSight[ghostNumber] = false;
         break;
       case "Down":
-        stateVars.pacmanInSight = false;
+        stateVars.pacmanInSight[ghostNumber] = false;
         break;
     }
-  } else if (stateVars.currentGhostCoor[1] === stateVars.currentPacmanCoor[1]) {
-    switch (stateVars.ghostDirection) {
+  } else if (
+    stateVars.currentGhostCoor[ghostNumber][1] ===
+    stateVars.currentPacmanCoor[1]
+  ) {
+    switch (stateVars.ghostDirection[ghostNumber]) {
       case "Up":
-        if (stateVars.currentGhostCoor[0] > stateVars.currentPacmanCoor[0]) {
+        if (
+          stateVars.currentGhostCoor[ghostNumber][0] >
+          stateVars.currentPacmanCoor[0]
+        ) {
           let localCellCount = 0;
           for (
-            let i = stateVars.currentGhostCoor[0];
+            let i = stateVars.currentGhostCoor[ghostNumber][0];
             i > stateVars.currentPacmanCoor[0];
             i--
           ) {
             if (
               stateVars.pathCoord.some(([row, col]) => {
-                return row === i && col === stateVars.currentGhostCoor[1];
+                return (
+                  row === i &&
+                  col === stateVars.currentGhostCoor[ghostNumber][1]
+                );
               })
             ) {
               localCellCount += 1;
             }
           }
-          console.log("localCellCount returned for UP is: ", localCellCount);
+
           if (
             localCellCount ===
-            stateVars.currentGhostCoor[0] - stateVars.currentPacmanCoor[0]
+            stateVars.currentGhostCoor[ghostNumber][0] -
+              stateVars.currentPacmanCoor[0]
           ) {
-            console.log("LOS up true condition was activated");
-            stateVars.pacmanInSight = true;
+            stateVars.pacmanInSight[ghostNumber] = true;
           }
         } else {
-          console.log("LOS up false condition was activated");
-          stateVars.pacmanInSight = false;
+          stateVars.pacmanInSight[ghostNumber] = false;
         }
         break;
       case "Down":
-        if (stateVars.currentGhostCoor[0] < stateVars.currentPacmanCoor[0]) {
+        if (
+          stateVars.currentGhostCoor[ghostNumber][0] <
+          stateVars.currentPacmanCoor[0]
+        ) {
           let localCellCount = 0;
           for (
-            let i = stateVars.currentGhostCoor[0];
+            let i = stateVars.currentGhostCoor[ghostNumber][0];
             i < stateVars.currentPacmanCoor[0];
             i++
           ) {
             if (
               stateVars.pathCoord.some(([row, col]) => {
-                return row === i && col === stateVars.currentGhostCoor[1];
+                return (
+                  row === i &&
+                  col === stateVars.currentGhostCoor[ghostNumber][1]
+                );
               })
             ) {
               localCellCount += 1;
@@ -322,78 +432,74 @@ export function checkForGhostLineOfSight() {
           }
           if (
             localCellCount ===
-            stateVars.currentPacmanCoor[0] - stateVars.currentGhostCoor[0]
+            stateVars.currentPacmanCoor[0] -
+              stateVars.currentGhostCoor[ghostNumber][0]
           ) {
-            console.log("LOS down true condition was activated");
-            stateVars.pacmanInSight = true;
-            console.log(
-              "pacmanInSight just after activation is: ",
-              stateVars.pacmanInSight,
-            );
+            stateVars.pacmanInSight[ghostNumber] = true;
           }
         } else {
-          console.log("LOS down false condition was activated");
-          stateVars.pacmanInSight = false;
+          stateVars.pacmanInSight[ghostNumber] = false;
         }
         break;
       case "Right":
-        stateVars.pacmanInSight = false;
+        stateVars.pacmanInSight[ghostNumber] = false;
         break;
       case "Left":
-        stateVars.pacmanInSight = false;
+        stateVars.pacmanInSight[ghostNumber] = false;
         break;
     }
   } else {
-    stateVars.pacmanInSight = false;
+    stateVars.pacmanInSight[ghostNumber] = false;
   }
 }
 
 // updateGhostArrayAndDOM() is used to move the ghost along the path cells available to it
-function updateGhostArrayAndDOM() {
+function updateGhostArrayAndDOM(ghostNumber) {
   if (!stateVars.gameOver) {
-    removeGhostFromState();
+    removeGhostFromState(ghostNumber);
 
-    removeGhostFromDOM();
+    removeGhostFromDOM(ghostNumber);
 
-    let prevGhostCoor = [...stateVars.currentGhostCoor];
+    let prevGhostCoor = [...stateVars.currentGhostCoor[ghostNumber]];
 
     // Set the new ghost coordinate based on direction
-    switch (stateVars.ghostDirection) {
+    switch (stateVars.ghostDirection[ghostNumber]) {
       case "Up":
-        stateVars.currentGhostCoor = [
-          stateVars.currentGhostCoor[0] - 1,
-          stateVars.currentGhostCoor[1],
+        stateVars.currentGhostCoor[ghostNumber] = [
+          stateVars.currentGhostCoor[ghostNumber][0] - 1,
+          stateVars.currentGhostCoor[ghostNumber][1],
         ];
         break;
       case "Down":
-        stateVars.currentGhostCoor = [
-          stateVars.currentGhostCoor[0] + 1,
-          stateVars.currentGhostCoor[1],
+        stateVars.currentGhostCoor[ghostNumber] = [
+          stateVars.currentGhostCoor[ghostNumber][0] + 1,
+          stateVars.currentGhostCoor[ghostNumber][1],
         ];
         break;
       case "Left":
-        stateVars.currentGhostCoor = [
-          stateVars.currentGhostCoor[0],
-          stateVars.currentGhostCoor[1] - 1,
+        stateVars.currentGhostCoor[ghostNumber] = [
+          stateVars.currentGhostCoor[ghostNumber][0],
+          stateVars.currentGhostCoor[ghostNumber][1] - 1,
         ];
         break;
       case "Right":
-        stateVars.currentGhostCoor = [
-          stateVars.currentGhostCoor[0],
-          stateVars.currentGhostCoor[1] + 1,
+        stateVars.currentGhostCoor[ghostNumber] = [
+          stateVars.currentGhostCoor[ghostNumber][0],
+          stateVars.currentGhostCoor[ghostNumber][1] + 1,
         ];
         break;
     }
 
     let updatedGhostCell =
-      stateVars.pathArray[stateVars.currentGhostCoor[0]][
-        stateVars.currentGhostCoor[1]
+      stateVars.pathArray[stateVars.currentGhostCoor[ghostNumber][0]][
+        stateVars.currentGhostCoor[ghostNumber][1]
       ];
+    // Check for gameOver if ghost hits pacman
     if (updatedGhostCell.includes("pacman")) {
       stateVars.gameOver = true;
       clearInterval(stateVars.pacmanInterval);
-      clearInterval(stateVars.ghostInterval);
-      stateVars.currentGhostCoor = prevGhostCoor;
+      clearInterval(stateVars.ghostInterval[ghostNumber]);
+      stateVars.currentGhostCoor[ghostNumber] = prevGhostCoor;
       pacman.removePacmanFromState();
       pacman.removePacmanFromDOM();
       stateVars.pathArray[stateVars.currentPacmanCoor[0]][
@@ -401,96 +507,86 @@ function updateGhostArrayAndDOM() {
       ].push("pacmanGameOver");
       pacman.addPacmanGameOverToDOM();
     }
-    updatedGhostCell.push("ghost");
-    updateGhostAnimationDirection();
-    addGhostToDOM();
-    checkForGhostLineOfSight();
-    ghostPathFindingLogic();
+    updatedGhostCell.push(`ghost${ghostNumber}`);
+
+    addGhostToBoardDOM(ghostNumber);
+    requestAnimationFrame(() => updateGhostAnimationDirection(ghostNumber));
+
+    checkForGhostLineOfSight(ghostNumber);
+    ghostPathFindingLogic(ghostNumber);
   }
 }
 
-export function ghostUp() {
+export function ghostUp(ghostNumber) {
   const checkUp = stateVars.pathCoord.some(([row, col]) => {
     return (
-      row === stateVars.currentGhostCoor[0] - 1 &&
-      col === stateVars.currentGhostCoor[1]
+      row === stateVars.currentGhostCoor[ghostNumber][0] - 1 &&
+      col === stateVars.currentGhostCoor[ghostNumber][1]
     );
   });
 
   if (checkUp) {
-    stateVars.ghostDirection = "Up";
-
-    // updateGhostArrayAndDOM();
+    stateVars.ghostDirection[ghostNumber] = "Up";
   } else {
   }
 }
 
-export function ghostDown() {
+export function ghostDown(ghostNumber) {
   const checkDown = stateVars.pathCoord.some(([row, col]) => {
     return (
-      row === stateVars.currentGhostCoor[0] + 1 &&
-      col === stateVars.currentGhostCoor[1]
+      row === stateVars.currentGhostCoor[ghostNumber][0] + 1 &&
+      col === stateVars.currentGhostCoor[ghostNumber][1]
     );
   });
 
   if (checkDown) {
-    stateVars.ghostDirection = "Down";
-
-    // updateGhostArrayAndDOM();
+    stateVars.ghostDirection[ghostNumber] = "Down";
   } else {
   }
 }
 
-export function ghostLeft() {
+export function ghostLeft(ghostNumber) {
   const checkLeft = stateVars.pathCoord.some(([row, col]) => {
     return (
-      row === stateVars.currentGhostCoor[0] &&
-      col === stateVars.currentGhostCoor[1] - 1
+      row === stateVars.currentGhostCoor[ghostNumber][0] &&
+      col === stateVars.currentGhostCoor[ghostNumber][1] - 1
     );
   });
 
   if (checkLeft) {
-    stateVars.ghostDirection = "Left";
-
-    // updateGhostArrayAndDOM();
+    stateVars.ghostDirection[ghostNumber] = "Left";
   } else {
   }
 }
 
-export function ghostRight() {
+export function ghostRight(ghostNumber) {
   const checkRight = stateVars.pathCoord.some(([row, col]) => {
     return (
-      row === stateVars.currentGhostCoor[0] &&
-      col === stateVars.currentGhostCoor[1] + 1
+      row === stateVars.currentGhostCoor[ghostNumber][0] &&
+      col === stateVars.currentGhostCoor[ghostNumber][1] + 1
     );
   });
 
   if (checkRight) {
-    stateVars.ghostDirection = "Right";
-
-    // updateGhostArrayAndDOM();
+    stateVars.ghostDirection[ghostNumber] = "Right";
   } else {
   }
 }
 // Randomly assign an available direction for the ghost to move in a fixed interval
-export function setRandomGhostDirection() {
-  clearInterval(stateVars.ghostInterval);
-  const dirArr = getAvailableDirectionsGhost();
+export function setRandomGhostDirection(ghostNumber) {
+  clearInterval(stateVars.ghostInterval[ghostNumber]);
+  const dirArr = getAvailableDirectionsGhost(ghostNumber);
   const ranDir = dirArr[Math.floor(Math.random() * dirArr.length)];
-  // if (stateVars.pacmanInSight) {
-  //   stateVars.ghostInterval = setInterval(ranDir, 100);
-  // } else {
-  //   stateVars.ghostInterval = setInterval(ranDir, 500);
-  // }
-  ranDir();
+
+  ranDir(ghostNumber);
 }
 
-export function getAvailableDirectionsGhost() {
+export function getAvailableDirectionsGhost(ghostNumber) {
   const dirArr = [];
   const checkUp = stateVars.pathCoord.some(([row, col]) => {
     return (
-      row === stateVars.currentGhostCoor[0] - 1 &&
-      col === stateVars.currentGhostCoor[1]
+      row === stateVars.currentGhostCoor[ghostNumber][0] - 1 &&
+      col === stateVars.currentGhostCoor[ghostNumber][1]
     );
   });
 
@@ -500,8 +596,8 @@ export function getAvailableDirectionsGhost() {
 
   const checkDown = stateVars.pathCoord.some(([row, col]) => {
     return (
-      row === stateVars.currentGhostCoor[0] + 1 &&
-      col === stateVars.currentGhostCoor[1]
+      row === stateVars.currentGhostCoor[ghostNumber][0] + 1 &&
+      col === stateVars.currentGhostCoor[ghostNumber][1]
     );
   });
   if (checkDown) {
@@ -510,8 +606,8 @@ export function getAvailableDirectionsGhost() {
 
   const checkLeft = stateVars.pathCoord.some(([row, col]) => {
     return (
-      row === stateVars.currentGhostCoor[0] &&
-      col === stateVars.currentGhostCoor[1] - 1
+      row === stateVars.currentGhostCoor[ghostNumber][0] &&
+      col === stateVars.currentGhostCoor[ghostNumber][1] - 1
     );
   });
   if (checkLeft) {
@@ -520,8 +616,8 @@ export function getAvailableDirectionsGhost() {
 
   const checkRight = stateVars.pathCoord.some(([row, col]) => {
     return (
-      row === stateVars.currentGhostCoor[0] &&
-      col === stateVars.currentGhostCoor[1] + 1
+      row === stateVars.currentGhostCoor[ghostNumber][0] &&
+      col === stateVars.currentGhostCoor[ghostNumber][1] + 1
     );
   });
   if (checkRight) {
@@ -531,14 +627,16 @@ export function getAvailableDirectionsGhost() {
   return dirArr;
 }
 
-export function generateGhostAtParticularPoint(x, y, direction) {
-  clearInterval(stateVars.ghostInterval);
-  removeGhostFromState();
-  removeGhostFromDOM();
-  stateVars.currentGhostCoor[0] = x;
-  stateVars.currentGhostCoor[1] = y;
-  stateVars.ghostDirection = direction;
-  addGhostToState();
-  addGhostToDOM();
-  updateGhostAnimationDirection();
+export function generateGhostAtParticularPoint(ghostNumber, x, y, direction) {
+  clearInterval(stateVars.ghostInterval[ghostNumber]);
+  removeGhostFromState(ghostNumber);
+  removeGhostFromDOM(ghostNumber);
+  stateVars.currentGhostCoor[ghostNumber][0] = x;
+  stateVars.currentGhostCoor[ghostNumber][1] = y;
+  stateVars.ghostDirection[ghostNumber] = direction;
+  addGhostToState(ghostNumber);
+
+  addGhostToBoardDOM(ghostNumber);
+  addGhostToBigDisplayDOM(ghostNumber);
+  requestAnimationFrame(() => updateGhostAnimationDirection(ghostNumber));
 }

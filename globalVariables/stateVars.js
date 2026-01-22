@@ -7,6 +7,8 @@ export default {
   ghostNormalSpeed: 500,
   // ghostLOSSpeed is the speed at which ghost moves through the grid when pacman is in sight
   ghostLOSSpeed: 100,
+  // noOfGhosts is the no of ghosts in the board
+  noOfGhosts: 4,
   // mainGridArray will have false only values in a gridsize*gridsize 2D nested array
   mainGridArray: [],
   // pathArray will have the ["path"] item added at the coordinates received for grid design
@@ -16,7 +18,7 @@ export default {
   // pacmanDirection is used to keep track of which direction pacman is facing
   pacmanDirection: "right",
   // ghostDirection is used to keep track of which direction ghost is facing
-  ghostDirection: "right",
+  ghostDirection: [],
   // currentPacmanCoor is used to keep track of pacman in [row#, col#] format in the board
   currentPacmanCoor: [],
   // currentGhostCoor is used to keep track of ghost in [row#, col#] format in the board
@@ -28,7 +30,7 @@ export default {
   // pacmanInterval is used for assigning a setInterval function to the movement of pacman along a straight path
   pacmanInterval: null,
   // ghostInterval is used for assigning a setInterval function to the movement of ghost along a straight path
-  ghostInterval: null,
+  ghostInterval: [],
   // If pacman is lin the general line of sight of ghost in ghost's direction of travel
-  pacmanInSight: false,
+  pacmanInSight: [],
 };

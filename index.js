@@ -35,7 +35,12 @@ docElems.loadGridPattern.addEventListener("click", async () => {
 
     gameFunc.populatePathStateArrayandDOM(stateVars.pathCoord);
     pacmanLogic.populatePacmaninArrayandDOM();
-    ghostLogic.populateGhostinArrayandDOM();
+
+    for (let i = 0; i < stateVars.noOfGhosts; i++) {
+      // populateGhostinArrayandDOM(ghostnumber) deals with all the logic for one ghost
+      ghostLogic.populateGhostinArrayandDOM(i);
+    }
+
     foodGen.populateFoodinArrayandDOM();
   } catch (err) {
     if (err.name === "AbortError") {

@@ -71,7 +71,9 @@ header {
   justify-content: space-around;
   margin: 10px 0;
 }
-
+#bigGhostsDisplay {
+  display: flex;
+}
 button {
   padding: 10px 15px;
   font-weight: bolder;
@@ -188,6 +190,7 @@ button {
 }
 
 #ghostSVG {
+  display: none;
   fill: blue;
   stroke: black;
   stroke-width: 2;

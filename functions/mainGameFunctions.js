@@ -21,6 +21,7 @@ export function createMainGrid() {
 
 // generation of js based false-only array for the grid size
 export function generateFalseOnlyGrid() {
+  stateVars.mainGridArray = [];
   for (let i = 0; i < stateVars.gridsize; i++) {
     let tempArr = [];
     for (let j = 0; j < stateVars.gridsize; j++) {
@@ -33,14 +34,20 @@ export function generateFalseOnlyGrid() {
 // function to reset js game states as well as grid DOM elements
 export function resetBoard() {
   // Reset all the state to 'false'
+  generateFalseOnlyGrid();
   stateVars.pathArray = [...stateVars.mainGridArray];
   // Reset all the class to initial state
 
   stateVars.gameOver = false;
   clearInterval(stateVars.pacmanInterval);
-  clearInterval(stateVars.ghostInterval);
+  stateVars.ghostInterval.forEach((ghostInt) => clearInterval(ghostInt));
+
   stateVars.pacmanInterval = null;
+  stateVars.ghostInterval = [];
+  stateVars.currentGhostCoor = [];
+  stateVars.currentPacmanCoor = [];
   docElems.mainGridContainer.innerHTML = "";
+  docElems.bigGhostsDisplay.innerHTML = "";
   stateVars.score = 0;
   docElems.scoreValue.innerHTML = "0";
 }

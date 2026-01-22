@@ -143,8 +143,8 @@ function updatePacmanArrayAndDOM() {
       stateVars.pathArray[stateVars.currentPacmanCoor[0]][
         stateVars.currentPacmanCoor[1]
       ];
-
-    if (updatedPacmanCell.includes("ghost")) {
+    // Check for gameOver if pacman hits ghost
+    if (updatedPacmanCell.some((element) => element.includes("ghost"))) {
       stateVars.gameOver = true;
       clearInterval(stateVars.pacmanInterval);
       clearInterval(stateVars.ghostInterval);
