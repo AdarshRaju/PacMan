@@ -62,6 +62,7 @@ window.generatePacmanAtParticularPoint =
   pacmanLogic.generatePacmanAtParticularPoint;
 
 window.ghostLOS = ghostLogic.checkForGhostLineOfSight;
+window.startGhostMovement = ghostLogic.updateGhostArrayAndDOM;
 
 window.stateVars = stateVars;
 // #endregion for testing and debugging

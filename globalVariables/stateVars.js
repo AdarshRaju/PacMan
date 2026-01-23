@@ -9,9 +9,9 @@ export default {
   ghostLOSSpeed: 100,
   // noOfGhosts is the no of ghosts in the board
   noOfGhosts: 4,
-  // mainGridArray will have false only values in a gridsize*gridsize 2D nested array
+  // mainGridArray will have initially have false only values in a gridsize*gridsize 2D nested array
   mainGridArray: [],
-  // pathArray will have the ["path"] item added at the coordinates received for grid design
+  // pathArray will have the ["path", "food", "pacman", "ghost#"] items added at the coordinates received for grid design
   pathArray: [],
   // pathCoord is the value of the path cells in [row#, col#] format
   pathCoord: [],
