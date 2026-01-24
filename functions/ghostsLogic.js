@@ -92,6 +92,15 @@ function removeGhostFromDOM(ghostNumber) {
 // updateGhostAnimationDirection changes the way the ghost's eyes are aligned (indicates movement direction)
 function updateGhostAnimationDirection(ghostNumber) {
   switch (stateVars.ghostDirection[ghostNumber]) {
+    case "Neutral":
+      [...docElems.ghosts(ghostNumber)].forEach((ghost) => {
+        const ghostUp = ghost.querySelectorAll(".eyesInner");
+        ghostUp[0].setAttribute("cx", 35);
+        ghostUp[0].setAttribute("cy", 30);
+        ghostUp[1].setAttribute("cx", 65);
+        ghostUp[1].setAttribute("cy", 30);
+      });
+      break;
     case "Up":
       [...docElems.ghosts(ghostNumber)].forEach((ghost) => {
         const ghostUp = ghost.querySelectorAll(".eyesInner");
@@ -521,41 +530,11 @@ function checkUpGhostInNextCell(ghostNumber) {
 }
 
 export function ghostUp(ghostNumber) {
-  // const checkUpForPath = stateVars.pathCoord.some(([row, col]) => {
-  //   return (
-  //     row === stateVars.currentGhostCoor[ghostNumber][0] - 1 &&
-  //     col === stateVars.currentGhostCoor[ghostNumber][1]
-  //   );
-  // });
-
-  // const checkUpGhostinNextCell = stateVars.pathArray[
-  //   stateVars.currentGhostCoor[ghostNumber][0] - 1
-  // ][stateVars.currentGhostCoor[ghostNumber][1]].some((item) =>
-  //   item.includes("ghost"),
-  // );
-
-  // if (checkUpGhostinNextCell) {
-  //   console.log(
-  //     "stateVars.pathArray[stateVars.currentGhostCoor[ghostNumber][0] - 1][stateVars.currentGhostCoor[ghostNumber][1]] returned is: ",
-  //     stateVars.pathArray[stateVars.currentGhostCoor[ghostNumber][0] - 1][
-  //       stateVars.currentGhostCoor[ghostNumber][1]
-  //     ],
-  //   );
-  // }
-
-  // const checkUp = checkUpForPath && !checkUpGhostinNextCell;
-  // let checkUpForPath = checkUpForPath(ghostNumber);
-  // let checkUpGhostinNextCell = checkUpGhostinNextCell(ghostNumber);
-
   const checkUp =
     checkUpForPath(ghostNumber) && !checkUpGhostInNextCell(ghostNumber);
-  // if (checkUpForPath(ghostNumber) && !checkUpGhostInNextCell(ghostNumber)) {
+
   if (checkUp) {
     stateVars.ghostDirection[ghostNumber] = "Up";
-  } else {
-    // if (checkUpForPath && checkUpGhostinNextCell) {
-    //   stateVars.ghostDirection[ghostNumber] = "Down";
-    // }
   }
 }
 
@@ -581,29 +560,11 @@ function checkDownGhostInNextCell(ghostNumber) {
 }
 
 export function ghostDown(ghostNumber) {
-  // const checkDownForPath = stateVars.pathCoord.some(([row, col]) => {
-  //   return (
-  //     row === stateVars.currentGhostCoor[ghostNumber][0] + 1 &&
-  //     col === stateVars.currentGhostCoor[ghostNumber][1]
-  //   );
-  // });
-
-  // const checkDownGhostInNextCell = stateVars.pathArray[
-  //   stateVars.currentGhostCoor[ghostNumber][0] + 1
-  // ][stateVars.currentGhostCoor[ghostNumber][1]].some((item) =>
-  //   item.includes("ghost"),
-  // );
-
-  // const checkDown = checkDownForPath && !checkDownGhostInNextCell;
   const checkDown =
     checkDownForPath(ghostNumber) && !checkDownGhostInNextCell(ghostNumber);
-  // if (checkDownForPath(ghostNumber) && !checkDownGhostInNextCell(ghostNumber)) {
+
   if (checkDown) {
     stateVars.ghostDirection[ghostNumber] = "Down";
-  } else {
-    // if (checkDownForPath && checkDownGhostInNextCell) {
-    //   stateVars.ghostDirection[ghostNumber] = "Up";
-    // }
   }
 }
 
@@ -629,32 +590,11 @@ function checkLeftGhostInNextCell(ghostNumber) {
 }
 
 export function ghostLeft(ghostNumber) {
-  // const checkLeftForPath = stateVars.pathCoord.some(([row, col]) => {
-  //   return (
-  //     row === stateVars.currentGhostCoor[ghostNumber][0] &&
-  //     col === stateVars.currentGhostCoor[ghostNumber][1] - 1
-  //   );
-  // });
-
-  // const checkLeftGhostInNextCell = stateVars.pathArray[
-  //   stateVars.currentGhostCoor[ghostNumber][0]
-  // ][stateVars.currentGhostCoor[ghostNumber][1] - 1].some((item) =>
-  //   item.includes("ghost"),
-  // );
-
-  // if (checkLeftForPath(ghostNumber) && checkLeftGhostInNextCell(ghostNumber)) {
-  //   console.log("checkLeftGhostInNextCell passed");
-  // }
   const checkLeft =
     checkLeftForPath(ghostNumber) && !checkLeftGhostInNextCell(ghostNumber);
-  // const checkLeft = checkLeftForPath && !checkLeftGhostInNextCell;
-  // if (checkLeftForPath(ghostNumber) && checkLeftGhostInNextCell(ghostNumber)) {
+
   if (checkLeft) {
     stateVars.ghostDirection[ghostNumber] = "Left";
-  } else {
-    // if (checkLeftForPath && checkLeftGhostInNextCell) {
-    //   stateVars.ghostDirection[ghostNumber] = "Right";
-    // }
   }
 }
 
@@ -680,101 +620,61 @@ function checkRightGhostInNextCell(ghostNumber) {
 }
 
 export function ghostRight(ghostNumber) {
-  // const checkRightForPath = stateVars.pathCoord.some(([row, col]) => {
-  //   return (
-  //     row === stateVars.currentGhostCoor[ghostNumber][0] &&
-  //     col === stateVars.currentGhostCoor[ghostNumber][1] + 1
-  //   );
-  // });
-
-  // const checkRightGhostInNextCell = stateVars.pathArray[
-  //   stateVars.currentGhostCoor[ghostNumber][0]
-  // ][stateVars.currentGhostCoor[ghostNumber][1] + 1].some((item) =>
-  //   item.includes("ghost"),
-  // );
   const checkRight =
     checkRightForPath(ghostNumber) && !checkRightGhostInNextCell(ghostNumber);
-  // if (checkRightGhostInNextCell) {
-  //   console.log("checkRightGhostInNextCell passed");
-  // }
-  // const checkRight = checkRightForPath && !checkRightGhostInNextCell;
-  if (
-    checkRight
-    // checkRightForPath(ghostNumber) &&
-    // !checkRightGhostInNextCell(ghostNumber)
-  ) {
+
+  if (checkRight) {
     stateVars.ghostDirection[ghostNumber] = "Right";
-  } else {
-    // if (checkRightForPath && checkRightGhostInNextCell) {
-    //   stateVars.ghostDirection[ghostNumber] = "Left";
-    // }
   }
 }
 // Randomly assign an available direction to the ghostDirection state variable for a particular ghost
 export function setRandomGhostDirection(ghostNumber) {
   clearInterval(stateVars.ghostInterval[ghostNumber]);
   const dirArr = getAvailableDirectionsGhost(ghostNumber);
-  // console.log("dirArr from setRandomDir is: ", dirArr);
+
   const ranDir = dirArr[Math.floor(Math.random() * dirArr.length)];
 
-  ranDir(ghostNumber);
+  if (dirArr.length > 0) {
+    ranDir(ghostNumber);
+  } else {
+    stateVars.ghostDirection[ghostNumber] = "Neutral";
+    requestAnimationFrame(() => updateGhostAnimationDirection(ghostNumber));
+
+    setTimeout(() => {
+      setRandomGhostDirection(ghostNumber);
+      setGhostSpeed(ghostNumber);
+    }, stateVars.ghostNormalSpeed + 100);
+  }
 }
 
 // getAvailableDirectionsGhost() is used to get the available path directions for a ghost
 export function getAvailableDirectionsGhost(ghostNumber) {
   const dirArr = [];
-  // const checkUp = stateVars.pathCoord.some(([row, col]) => {
-  //   return (
-  //     row === stateVars.currentGhostCoor[ghostNumber][0] - 1 &&
-  //     col === stateVars.currentGhostCoor[ghostNumber][1]
-  //   );
-  // });
 
   const checkUp =
     checkUpForPath(ghostNumber) && !checkUpGhostInNextCell(ghostNumber);
-  // checkUpForPath(ghostNumber) && !checkUpGhostInNextCell(ghostNumber);
 
   if (checkUp) {
     dirArr.push(ghostUp);
   }
 
-  // const checkDown = stateVars.pathCoord.some(([row, col]) => {
-  //   return (
-  //     row === stateVars.currentGhostCoor[ghostNumber][0] + 1 &&
-  //     col === stateVars.currentGhostCoor[ghostNumber][1]
-  //   );
-  // });
-
   const checkDown =
     checkDownForPath(ghostNumber) && !checkDownGhostInNextCell(ghostNumber);
-  // checkDownForPath(ghostNumber) && !checkDownGhostInNextCell(ghostNumber);
+
   if (checkDown) {
     dirArr.push(ghostDown);
   }
 
-  // const checkLeft = stateVars.pathCoord.some(([row, col]) => {
-  //   return (
-  //     row === stateVars.currentGhostCoor[ghostNumber][0] &&
-  //     col === stateVars.currentGhostCoor[ghostNumber][1] - 1
-  //   );
-  // });
   const checkLeft =
     checkLeftForPath(ghostNumber) && !checkLeftGhostInNextCell(ghostNumber);
-  // checkLeftForPath(ghostNumber) && !checkLeftGhostInNextCell(ghostNumber);
+
   if (checkLeft) {
     dirArr.push(ghostLeft);
   }
 
-  // const checkRight = stateVars.pathCoord.some(([row, col]) => {
-  //   return (
-  //     row === stateVars.currentGhostCoor[ghostNumber][0] &&
-  //     col === stateVars.currentGhostCoor[ghostNumber][1] + 1
-  //   );
-  // });
-
   const checkRight =
     checkRightForPath(ghostNumber) && !checkRightGhostInNextCell(ghostNumber);
-  // checkRightForPath(ghostNumber) && !checkRightGhostInNextCell(ghostNumber);
+
   if (checkRight) {
     dirArr.push(ghostRight);
   }
@@ -793,7 +693,4 @@ export function generateGhostAtParticularPoint(ghostNumber, x, y, direction) {
 
   addGhostToBoardDOM(ghostNumber);
   requestAnimationFrame(() => updateGhostAnimationDirection(ghostNumber));
-
-  // Comment out the line below to have the ghost freeze at a particular coordinate point
-  // updateGhostArrayAndDOM(ghostNumber);
 }
