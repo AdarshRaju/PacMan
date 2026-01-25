@@ -73,6 +73,22 @@ export function populatePacmaninArrayandDOM() {
   addPacmanToDOM();
 }
 
+export function handleGameOver() {
+  stateVars.gameOver = true;
+  clearInterval(stateVars.pacmanInterval);
+
+  stateVars.ghostInterval.forEach((ghostInt) => {
+    if (ghostInt !== null) {
+      clearInterval(ghostInt);
+    }
+  });
+  stateVars.pathArray[stateVars.currentPacmanCoor[0]][
+    stateVars.currentPacmanCoor[1]
+  ].push("pacmanGameOver");
+
+  addPacmanGameOverToDOM();
+}
+
 function updatePacmanArrayAndDOM() {
   if (!stateVars.gameOver) {
     removePacmanFromState();
@@ -145,13 +161,9 @@ function updatePacmanArrayAndDOM() {
       ];
     // Check for gameOver if pacman hits ghost
     if (updatedPacmanCell.some((element) => element.includes("ghost"))) {
-      stateVars.gameOver = true;
-      clearInterval(stateVars.pacmanInterval);
-      clearInterval(stateVars.ghostInterval);
       stateVars.currentPacmanCoor = prevPacmanCoord;
-      updatedPacmanCell.push("pacmanGameOver");
 
-      addPacmanGameOverToDOM();
+      handleGameOver();
     } else {
       // If food is in the new cell without a ghost, remove 'food' from state array and DOM and update score
 
@@ -172,10 +184,15 @@ function updatePacmanArrayAndDOM() {
           );
         }
         docElems.scoreValue.innerHTML = stateVars.score;
+        if (docElems.foodCells.length === 0) {
+          handleGameOver();
+          docElems.scoreValue.innerHTML = "Congrats! You won!";
+        }
       }
       updatedPacmanCell.push("pacman");
-
-      addPacmanToDOM();
+      if (!stateVars.gameOver) {
+        addPacmanToDOM();
+      }
     }
   }
 }
@@ -210,7 +227,6 @@ export function pacmanUp() {
 
     docElems.pacman[0] &&
       (docElems.pacman[0].style.animationName = "pacman-up");
-  } else {
   }
 }
 
@@ -241,7 +257,6 @@ export function pacmanDown() {
     updatePacmanArrayAndDOM();
     docElems.pacman[0] &&
       (docElems.pacman[0].style.animationName = "pacman-down");
-  } else {
   }
 }
 
@@ -275,7 +290,6 @@ export function pacmanLeft() {
     updatePacmanArrayAndDOM();
     docElems.pacman[0] &&
       (docElems.pacman[0].style.animationName = "pacman-left");
-  } else {
   }
 }
 function pacmanNormalRightCheck() {
@@ -305,7 +319,6 @@ export function pacmanRight() {
     updatePacmanArrayAndDOM();
     docElems.pacman[0] &&
       (docElems.pacman[0].style.animationName = "pacman-right");
-  } else {
   }
 }
 

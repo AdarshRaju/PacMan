@@ -72,6 +72,10 @@ export function populatePathStateArrayandDOM(pathCoord) {
 export function handleKeyPress(e) {
   e.preventDefault();
   clearInterval(stateVars.pacmanInterval);
+  console.log(
+    "stateVars.pacmanInterval just after clearing is: ",
+    stateVars.pacmanInterval,
+  );
 
   switch (e.key) {
     case "ArrowUp":

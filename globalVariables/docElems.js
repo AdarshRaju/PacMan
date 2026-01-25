@@ -6,6 +6,7 @@ export const scoreValue = document.getElementById("scoreValue");
 export const highScoreValue = document.getElementById("highScoreValue");
 export const ghostSVG = document.getElementById("ghostSVG");
 export const bigGhostsDisplay = document.getElementById("bigGhostsDisplay");
+export const foodCells = document.getElementsByClassName("food");
 export function ghosts(ghostNumber) {
   return document.querySelectorAll(`.ghosts${ghostNumber}`);
 }

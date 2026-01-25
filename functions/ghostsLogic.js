@@ -15,20 +15,6 @@ function addGhostToBigDisplayDOM(ghostNumber) {
   const ghostSVGDisplay = docElems.ghostSVG.cloneNode(true);
   ghostSVGDisplay.classList.add(`ghosts${ghostNumber}`);
   ghostSVGDisplay.style.display = "block";
-  switch (ghostNumber) {
-    case 0:
-      ghostSVGDisplay.style.fill = "orange";
-      break;
-    case 1:
-      ghostSVGDisplay.style.fill = "green";
-      break;
-    case 2:
-      ghostSVGDisplay.style.fill = "blue";
-      break;
-    case 3:
-      ghostSVGDisplay.style.fill = "purple";
-      break;
-  }
 
   docElems.bigGhostsDisplay.appendChild(ghostSVGDisplay);
 }
@@ -37,20 +23,6 @@ function addGhostToBoardDOM(ghostNumber) {
   const ghostSVGDisplay = docElems.ghostSVG.cloneNode(true);
   ghostSVGDisplay.classList.add(`ghosts${ghostNumber}`);
   ghostSVGDisplay.style.display = "block";
-  switch (ghostNumber) {
-    case 0:
-      ghostSVGDisplay.style.fill = "orange";
-      break;
-    case 1:
-      ghostSVGDisplay.style.fill = "green";
-      break;
-    case 2:
-      ghostSVGDisplay.style.fill = "blue";
-      break;
-    case 3:
-      ghostSVGDisplay.style.fill = "purple";
-      break;
-  }
 
   const ghostSVGInBoard = ghostSVGDisplay.cloneNode(true);
 
@@ -184,6 +156,7 @@ function setGhostSpeed(ghostNumber) {
   }
 }
 function ghostPathFindingLogic(ghostNumber) {
+  // stateVars.ghostInterval.forEach((ghost) => clearInterval(ghost));
   clearInterval(stateVars.ghostInterval[ghostNumber]);
   const dirArr = getAvailableDirectionsGhost(ghostNumber);
   // The ghost will continue moving forward unless it hits a wall or finds an alternative path
@@ -446,6 +419,10 @@ export function checkForGhostLineOfSight(ghostNumber) {
 
 // updateGhostArrayAndDOM() is used to move the ghost along the path cells available to it
 export function updateGhostArrayAndDOM(ghostNumber) {
+  console.log(
+    "update ghost array and dom was run for ghost number: ",
+    ghostNumber,
+  );
   if (!stateVars.gameOver) {
     removeGhostFromState(ghostNumber);
 
@@ -487,24 +464,22 @@ export function updateGhostArrayAndDOM(ghostNumber) {
       ];
     // Check for gameOver if ghost hits pacman
     if (updatedGhostCell.includes("pacman")) {
-      stateVars.gameOver = true;
-      clearInterval(stateVars.pacmanInterval);
-      clearInterval(stateVars.ghostInterval[ghostNumber]);
-      stateVars.currentGhostCoor[ghostNumber] = prevGhostCoor;
       pacman.removePacmanFromState();
       pacman.removePacmanFromDOM();
-      stateVars.pathArray[stateVars.currentPacmanCoor[0]][
-        stateVars.currentPacmanCoor[1]
-      ].push("pacmanGameOver");
-      pacman.addPacmanGameOverToDOM();
+      clearInterval(stateVars.ghostInterval[ghostNumber]);
+      pacman.handleGameOver();
+      // return;
+
+      stateVars.currentGhostCoor[ghostNumber] = prevGhostCoor;
     }
     updatedGhostCell.push(`ghost${ghostNumber}`);
 
     addGhostToBoardDOM(ghostNumber);
     requestAnimationFrame(() => updateGhostAnimationDirection(ghostNumber));
-
-    checkForGhostLineOfSight(ghostNumber);
-    ghostPathFindingLogic(ghostNumber);
+    if (!stateVars.gameOver) {
+      checkForGhostLineOfSight(ghostNumber);
+      ghostPathFindingLogic(ghostNumber);
+    }
   }
 }
 
@@ -629,6 +604,7 @@ export function ghostRight(ghostNumber) {
 }
 // Randomly assign an available direction to the ghostDirection state variable for a particular ghost
 export function setRandomGhostDirection(ghostNumber) {
+  // stateVars.ghostInterval.forEach((ghost) => clearInterval(ghost));
   clearInterval(stateVars.ghostInterval[ghostNumber]);
   const dirArr = getAvailableDirectionsGhost(ghostNumber);
 
