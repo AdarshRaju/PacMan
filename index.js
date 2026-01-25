@@ -31,6 +31,15 @@ docElems.loadGridPattern.addEventListener("click", async () => {
       console.error(err);
     }
 
+    const existingHighScore = localStorage.getItem("pacmanHighScore");
+    if (existingHighScore) {
+      console.log("existing highScore if logic was activated");
+      stateVars.highScore = parseInt(JSON.parse(existingHighScore));
+    } else {
+      console.log("non existing highScore if logic was activated");
+      localStorage.setItem("pacmanHighScore", JSON.stringify(0));
+    }
+    docElems.highScoreValue.innerHTML = stateVars.highScore;
     gameFunc.createMainGrid();
 
     gameFunc.populatePathStateArrayandDOM(stateVars.pathCoord);

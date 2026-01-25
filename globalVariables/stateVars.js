@@ -25,6 +25,8 @@ export default {
   currentGhostCoor: [],
   // score increases by 1 each time pacman eats a food
   score: 0,
+  // highScore is tracked through a local file written to the disc
+  highScore: 0,
   // gameOver state is reached by eating all the food or touching a ghost
   gameOver: true,
   // pacmanInterval is used for assigning a setInterval function to the movement of pacman along a straight path

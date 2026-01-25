@@ -163,6 +163,14 @@ function updatePacmanArrayAndDOM() {
           stateVars.currentPacmanCoor[0]
         ].children[stateVars.currentPacmanCoor[1]].classList.remove("food");
         stateVars.score += 1;
+        if (stateVars.score > stateVars.highScore) {
+          stateVars.highScore = stateVars.score;
+          docElems.highScoreValue.innerHTML = stateVars.highScore;
+          localStorage.setItem(
+            "pacmanHighScore",
+            JSON.stringify(stateVars.highScore),
+          );
+        }
         docElems.scoreValue.innerHTML = stateVars.score;
       }
       updatedPacmanCell.push("pacman");

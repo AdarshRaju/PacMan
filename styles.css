@@ -19,16 +19,23 @@ header {
   background-color: rgb(225, 67, 10);
 }
 
-#score {
+#score,
+#highScore {
   display: flex;
   font-size: 20px;
   margin-left: 200px;
   margin-bottom: 20px;
-  align-items: baseline;
+  align-items: flex-start;
   /* font-family: "Turret Road", sans-serif; */
 }
 
-#scoreValue {
+#highScore {
+  font-size: 15px;
+  margin-left: 20px;
+}
+
+#scoreValue,
+#highScoreValue {
   font-size: larger;
   font-weight: bolder;
   margin-left: 5px;
