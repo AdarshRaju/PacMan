@@ -1,5 +1,6 @@
 import * as docElems from "../globalVariables/docElems.js";
 import stateVars from "../globalVariables/stateVars.js";
+import * as gameFunc from "./mainGameFunctions.js";
 
 function addPacmanToState() {
   let newPacmanCell =
@@ -75,6 +76,10 @@ export function populatePacmaninArrayandDOM() {
 
 export function handleGameOver() {
   stateVars.gameOver = true;
+  // docElems.pacmanSound.pause();
+  // docElems.pacmanSound.removeEventListener("ended", gameFunc.pacmanSoundLoop);
+  stateVars.pacmanAudio.source.stop();
+
   clearInterval(stateVars.pacmanInterval);
 
   stateVars.ghostInterval.forEach((ghostInt) => {
@@ -87,6 +92,8 @@ export function handleGameOver() {
   ].push("pacmanGameOver");
 
   addPacmanGameOverToDOM();
+  // docElems.gameOverSound.play();
+  gameFunc.loadAudioThroughAudioContext(gameFunc.pacmanGameOverBufferDecoded);
 }
 
 function updatePacmanArrayAndDOM() {

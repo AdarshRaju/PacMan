@@ -72,10 +72,6 @@ export function populatePathStateArrayandDOM(pathCoord) {
 export function handleKeyPress(e) {
   e.preventDefault();
   clearInterval(stateVars.pacmanInterval);
-  console.log(
-    "stateVars.pacmanInterval just after clearing is: ",
-    stateVars.pacmanInterval,
-  );
 
   switch (e.key) {
     case "ArrowUp":
@@ -108,3 +104,43 @@ export function handleKeyPress(e) {
       break;
   }
 }
+
+const ctx = new AudioContext();
+
+async function loadBuffer(url) {
+  const response = await fetch(url);
+  const rawBuffer = await response.arrayBuffer();
+  return await ctx.decodeAudioData(rawBuffer);
+}
+
+export function loadAudioThroughAudioContext(
+  bufferDecoded,
+  { loop = false, volume = 1 } = {},
+) {
+  const source = ctx.createBufferSource();
+  const gain = ctx.createGain();
+
+  source.buffer = bufferDecoded;
+  source.loop = loop;
+
+  gain.gain.value = volume;
+
+  source.connect(gain);
+  gain.connect(ctx.destination);
+
+  source.start();
+
+  return { source, gain };
+}
+
+export const pacmanSoundBufferDecoded = await loadBuffer(
+  "../sounds/PAC-MAN 3s.wav",
+);
+
+export const pacmanGameOverBufferDecoded = await loadBuffer(
+  "../sounds/Pacman Game Over - QuickSounds.com.mp3",
+);
+
+export const pacmanLOSSoundBufferDecoded = await loadBuffer(
+  "../sounds/jump-and-fight.mp3",
+);

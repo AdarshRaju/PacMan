@@ -10,3 +10,4 @@ export const foodCells = document.getElementsByClassName("food");
 export function ghosts(ghostNumber) {
   return document.querySelectorAll(`.ghosts${ghostNumber}`);
 }
+export const pacmanLOSSound = new Audio("./sounds/jump-and-fight.mp3");

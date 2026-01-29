@@ -1,6 +1,7 @@
 import * as docElems from "../globalVariables/docElems.js";
 import stateVars from "../globalVariables/stateVars.js";
 import * as pacman from "./pacmanLogic.js";
+import * as gameFunc from "./mainGameFunctions.js";
 
 function addGhostToState(ghostNumber) {
   let newGhostCell =
@@ -287,6 +288,10 @@ export function checkForGhostLineOfSight(ghostNumber) {
               parseInt(stateVars.currentGhostCoor[ghostNumber][1])
           ) {
             stateVars.pacmanInSight[ghostNumber] = true;
+            docElems.pacmanLOSSound.play();
+            // gameFunc.loadAudioThroughAudioContext(
+            //   gameFunc.pacmanLOSSoundBufferDecoded,
+            // );
           }
         } else {
           stateVars.pacmanInSight[ghostNumber] = false;
@@ -321,6 +326,10 @@ export function checkForGhostLineOfSight(ghostNumber) {
               stateVars.currentPacmanCoor[1]
           ) {
             stateVars.pacmanInSight[ghostNumber] = true;
+            docElems.pacmanLOSSound.play();
+            // gameFunc.loadAudioThroughAudioContext(
+            //   gameFunc.pacmanLOSSoundBufferDecoded,
+            // );
           }
         } else {
           stateVars.pacmanInSight[ghostNumber] = false;
@@ -367,6 +376,10 @@ export function checkForGhostLineOfSight(ghostNumber) {
               stateVars.currentPacmanCoor[0]
           ) {
             stateVars.pacmanInSight[ghostNumber] = true;
+            docElems.pacmanLOSSound.play();
+            // gameFunc.loadAudioThroughAudioContext(
+            //   gameFunc.pacmanLOSSoundBufferDecoded,
+            // );
           }
         } else {
           stateVars.pacmanInSight[ghostNumber] = false;
@@ -400,6 +413,10 @@ export function checkForGhostLineOfSight(ghostNumber) {
               stateVars.currentGhostCoor[ghostNumber][0]
           ) {
             stateVars.pacmanInSight[ghostNumber] = true;
+            docElems.pacmanLOSSound.play();
+            // gameFunc.loadAudioThroughAudioContext(
+            //   gameFunc.pacmanLOSSoundBufferDecoded,
+            // );
           }
         } else {
           stateVars.pacmanInSight[ghostNumber] = false;
@@ -419,10 +436,6 @@ export function checkForGhostLineOfSight(ghostNumber) {
 
 // updateGhostArrayAndDOM() is used to move the ghost along the path cells available to it
 export function updateGhostArrayAndDOM(ghostNumber) {
-  console.log(
-    "update ghost array and dom was run for ghost number: ",
-    ghostNumber,
-  );
   if (!stateVars.gameOver) {
     removeGhostFromState(ghostNumber);
 
@@ -468,7 +481,6 @@ export function updateGhostArrayAndDOM(ghostNumber) {
       pacman.removePacmanFromDOM();
       clearInterval(stateVars.ghostInterval[ghostNumber]);
       pacman.handleGameOver();
-      // return;
 
       stateVars.currentGhostCoor[ghostNumber] = prevGhostCoor;
     }
@@ -604,7 +616,6 @@ export function ghostRight(ghostNumber) {
 }
 // Randomly assign an available direction to the ghostDirection state variable for a particular ghost
 export function setRandomGhostDirection(ghostNumber) {
-  // stateVars.ghostInterval.forEach((ghost) => clearInterval(ghost));
   clearInterval(stateVars.ghostInterval[ghostNumber]);
   const dirArr = getAvailableDirectionsGhost(ghostNumber);
 

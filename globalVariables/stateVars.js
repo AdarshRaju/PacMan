@@ -33,6 +33,8 @@ export default {
   pacmanInterval: null,
   // ghostInterval is used for assigning a setInterval function to the movement of ghost along a straight path
   ghostInterval: [],
-  // If pacman is lin the general line of sight of ghost in ghost's direction of travel
+  // If pacman is in the general line of sight of ghost in ghost's direction of travel
   pacmanInSight: [],
+  //pacmanAudio is used to deal with the main looping sound without gaps in between using web audio API
+  pacmanAudio: null,
 };

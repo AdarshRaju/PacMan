@@ -6,6 +6,9 @@ import * as ghostLogic from "./functions/ghostsLogic.js";
 import * as foodGen from "./functions/foodGenerationLogic.js";
 
 docElems.loadGridPattern.addEventListener("click", async () => {
+  stateVars.pacmanAudio?.source.stop();
+  stateVars.pacmanAudio = null;
+
   try {
     const [handle] = await window.showOpenFilePicker({
       multiple: false,
@@ -33,17 +36,19 @@ docElems.loadGridPattern.addEventListener("click", async () => {
 
     const existingHighScore = localStorage.getItem("pacmanHighScore");
     if (existingHighScore) {
-      console.log("existing highScore if logic was activated");
       stateVars.highScore = parseInt(JSON.parse(existingHighScore));
     } else {
-      console.log("non existing highScore if logic was activated");
       localStorage.setItem("pacmanHighScore", JSON.stringify(0));
     }
     docElems.highScoreValue.innerHTML = stateVars.highScore;
     gameFunc.createMainGrid();
-
+    // populatePathStateArrayandDOM generates the path for pacman and ghosts from the coordinates received
     gameFunc.populatePathStateArrayandDOM(stateVars.pathCoord);
     pacmanLogic.populatePacmaninArrayandDOM();
+    stateVars.pacmanAudio = gameFunc.loadAudioThroughAudioContext(
+      gameFunc.pacmanSoundBufferDecoded,
+      { loop: true },
+    );
 
     for (let i = 0; i < stateVars.noOfGhosts; i++) {
       // populateGhostinArrayandDOM(ghostnumber) deals with all the logic for one ghost
