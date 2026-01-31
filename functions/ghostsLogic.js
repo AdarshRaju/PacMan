@@ -1,7 +1,6 @@
 import * as docElems from "../globalVariables/docElems.js";
 import stateVars from "../globalVariables/stateVars.js";
 import * as pacman from "./pacmanLogic.js";
-import * as gameFunc from "./mainGameFunctions.js";
 
 function addGhostToState(ghostNumber) {
   let newGhostCell =
@@ -14,7 +13,7 @@ function addGhostToState(ghostNumber) {
 
 function addGhostToBigDisplayDOM(ghostNumber) {
   const ghostSVGDisplay = docElems.ghostSVG.cloneNode(true);
-  ghostSVGDisplay.classList.add(`ghosts${ghostNumber}`);
+  ghostSVGDisplay.classList.add(`ghosts${ghostNumber}`, `ghosts`);
   ghostSVGDisplay.style.display = "block";
 
   docElems.bigGhostsDisplay.appendChild(ghostSVGDisplay);
@@ -22,7 +21,10 @@ function addGhostToBigDisplayDOM(ghostNumber) {
 
 function addGhostToBoardDOM(ghostNumber) {
   const ghostSVGDisplay = docElems.ghostSVG.cloneNode(true);
-  ghostSVGDisplay.classList.add(`ghosts${ghostNumber}`);
+  ghostSVGDisplay.classList.add(`ghosts${ghostNumber}`, `ghosts`);
+  if (stateVars.ghostHexedStates[ghostNumber]) {
+    ghostSVGDisplay.classList.add(`hexedghost`);
+  }
   ghostSVGDisplay.style.display = "block";
 
   const ghostSVGInBoard = ghostSVGDisplay.cloneNode(true);
@@ -47,7 +49,7 @@ function addGhostToBoardDOM(ghostNumber) {
   );
 }
 
-function removeGhostFromState(ghostNumber) {
+export function removeGhostFromState(ghostNumber) {
   const ghostInd = stateVars.pathArray[
     stateVars.currentGhostCoor[ghostNumber][0]
   ][stateVars.currentGhostCoor[ghostNumber][1]].indexOf(`ghost${ghostNumber}`);
@@ -58,8 +60,15 @@ function removeGhostFromState(ghostNumber) {
   }
 }
 
-function removeGhostFromDOM(ghostNumber) {
+export function removeGhostFromDOM(ghostNumber) {
   document.querySelector(`#ghostInBoard${ghostNumber}`).remove();
+}
+
+export function removeGhostHexState(ghostNumber) {
+  stateVars.ghostHexedStates[ghostNumber] = false;
+  [...docElems.ghosts(ghostNumber)].forEach((ghost) =>
+    ghost.classList.remove("hexedghost"),
+  );
 }
 
 // updateGhostAnimationDirection changes the way the ghost's eyes are aligned (indicates movement direction)
@@ -120,11 +129,9 @@ export function populateGhostinArrayandDOM(ghostNumber) {
     return !(
       (row === stateVars.currentPacmanCoor[0] &&
         col === stateVars.currentPacmanCoor[1]) ||
-      stateVars.currentGhostCoor[ghostNumber]?.some(
-        ([ghostNumRow, ghostNumCol]) => {
-          return row === ghostNumRow && col === ghostNumCol;
-        },
-      )
+      stateVars.currentGhostCoor?.some(([ghostNumRow, ghostNumCol]) => {
+        return row === ghostNumRow && col === ghostNumCol;
+      })
     );
   });
 
@@ -132,15 +139,24 @@ export function populateGhostinArrayandDOM(ghostNumber) {
   stateVars.currentGhostCoor[ghostNumber] = filteredArray[randomIndex];
 
   addGhostToState(ghostNumber);
+  if (
+    document.getElementById("bigGhostsDisplay").children.length <
+    stateVars.noOfGhosts
+  ) {
+    addGhostToBigDisplayDOM(ghostNumber);
+  }
 
-  addGhostToBigDisplayDOM(ghostNumber);
   addGhostToBoardDOM(ghostNumber);
   setRandomGhostDirection(ghostNumber);
   requestAnimationFrame(() => updateGhostArrayAndDOM(ghostNumber));
 }
 
 function setGhostSpeed(ghostNumber) {
-  if (!stateVars.pacmanInSight[ghostNumber]) {
+  if (
+    !stateVars.pacmanInSight[ghostNumber] ||
+    (stateVars.pacmanInSight[ghostNumber] &&
+      stateVars.ghostHexedStates[ghostNumber])
+  ) {
     stateVars.ghostInterval[ghostNumber] = setInterval(
       updateGhostArrayAndDOM,
 
@@ -148,6 +164,7 @@ function setGhostSpeed(ghostNumber) {
       ghostNumber,
     );
   } else {
+    docElems.pacmanLOSSound.play();
     stateVars.ghostInterval[ghostNumber] = setInterval(
       updateGhostArrayAndDOM,
 
@@ -157,7 +174,6 @@ function setGhostSpeed(ghostNumber) {
   }
 }
 function ghostPathFindingLogic(ghostNumber) {
-  // stateVars.ghostInterval.forEach((ghost) => clearInterval(ghost));
   clearInterval(stateVars.ghostInterval[ghostNumber]);
   const dirArr = getAvailableDirectionsGhost(ghostNumber);
   // The ghost will continue moving forward unless it hits a wall or finds an alternative path
@@ -167,9 +183,21 @@ function ghostPathFindingLogic(ghostNumber) {
         (dirArr.includes(ghostRight) ||
           dirArr.includes(ghostLeft) ||
           !dirArr.includes(ghostUp)) &&
-        !stateVars.pacmanInSight[ghostNumber]
+        (!stateVars.pacmanInSight[ghostNumber] ||
+          (stateVars.pacmanInSight[ghostNumber] &&
+            stateVars.ghostHexedStates[ghostNumber]))
       ) {
-        setRandomGhostDirection(ghostNumber);
+        if (
+          stateVars.pacmanInSight[ghostNumber] &&
+          stateVars.ghostHexedStates[ghostNumber] &&
+          dirArr.includes(ghostUp)
+        ) {
+          const ind = dirArr.indexOf(ghostUp);
+          dirArr.splice(ind, 1);
+          dirArr[Math.floor(Math.random() * dirArr.length)](ghostNumber);
+        } else {
+          setRandomGhostDirection(ghostNumber);
+        }
 
         stateVars.ghostInterval[ghostNumber] = setInterval(
           updateGhostArrayAndDOM,
@@ -178,7 +206,15 @@ function ghostPathFindingLogic(ghostNumber) {
           ghostNumber,
         );
       } else {
-        ghostUp(ghostNumber);
+        if (
+          stateVars.pacmanInSight[ghostNumber] &&
+          stateVars.ghostHexedStates[ghostNumber] &&
+          dirArr.includes(ghostUp)
+        ) {
+          ghostDown(ghostNumber);
+        } else {
+          ghostUp(ghostNumber);
+        }
 
         setGhostSpeed(ghostNumber);
       }
@@ -189,9 +225,22 @@ function ghostPathFindingLogic(ghostNumber) {
         (dirArr.includes(ghostRight) ||
           dirArr.includes(ghostLeft) ||
           !dirArr.includes(ghostDown)) &&
-        !stateVars.pacmanInSight[ghostNumber]
+        (!stateVars.pacmanInSight[ghostNumber] ||
+          (stateVars.pacmanInSight[ghostNumber] &&
+            stateVars.ghostHexedStates[ghostNumber]))
       ) {
-        setRandomGhostDirection(ghostNumber);
+        if (
+          stateVars.pacmanInSight[ghostNumber] &&
+          stateVars.ghostHexedStates[ghostNumber] &&
+          dirArr.includes(ghostDown)
+        ) {
+          const ind = dirArr.indexOf(ghostDown);
+          dirArr.splice(ind, 1);
+          dirArr[Math.floor(Math.random() * dirArr.length)](ghostNumber);
+        } else {
+          setRandomGhostDirection(ghostNumber);
+        }
+        // setRandomGhostDirection(ghostNumber);
 
         stateVars.ghostInterval[ghostNumber] = setInterval(
           updateGhostArrayAndDOM,
@@ -200,7 +249,15 @@ function ghostPathFindingLogic(ghostNumber) {
           ghostNumber,
         );
       } else {
-        ghostDown(ghostNumber);
+        if (
+          stateVars.pacmanInSight[ghostNumber] &&
+          stateVars.ghostHexedStates[ghostNumber] &&
+          dirArr.includes(ghostDown)
+        ) {
+          ghostUp(ghostNumber);
+        } else {
+          ghostDown(ghostNumber);
+        }
 
         setGhostSpeed(ghostNumber);
       }
@@ -210,9 +267,22 @@ function ghostPathFindingLogic(ghostNumber) {
         (dirArr.includes(ghostUp) ||
           dirArr.includes(ghostDown) ||
           !dirArr.includes(ghostLeft)) &&
-        !stateVars.pacmanInSight[ghostNumber]
+        (!stateVars.pacmanInSight[ghostNumber] ||
+          (stateVars.pacmanInSight[ghostNumber] &&
+            stateVars.ghostHexedStates[ghostNumber]))
       ) {
-        setRandomGhostDirection(ghostNumber);
+        if (
+          stateVars.pacmanInSight[ghostNumber] &&
+          stateVars.ghostHexedStates[ghostNumber] &&
+          dirArr.includes(ghostLeft)
+        ) {
+          const ind = dirArr.indexOf(ghostLeft);
+          dirArr.splice(ind, 1);
+          dirArr[Math.floor(Math.random() * dirArr.length)](ghostNumber);
+        } else {
+          setRandomGhostDirection(ghostNumber);
+        }
+        // setRandomGhostDirection(ghostNumber);
 
         stateVars.ghostInterval[ghostNumber] = setInterval(
           updateGhostArrayAndDOM,
@@ -221,7 +291,15 @@ function ghostPathFindingLogic(ghostNumber) {
           ghostNumber,
         );
       } else {
-        ghostLeft(ghostNumber);
+        if (
+          stateVars.pacmanInSight[ghostNumber] &&
+          stateVars.ghostHexedStates[ghostNumber] &&
+          dirArr.includes(ghostLeft)
+        ) {
+          ghostRight(ghostNumber);
+        } else {
+          ghostLeft(ghostNumber);
+        }
 
         setGhostSpeed(ghostNumber);
       }
@@ -232,9 +310,22 @@ function ghostPathFindingLogic(ghostNumber) {
         (dirArr.includes(ghostUp) ||
           dirArr.includes(ghostDown) ||
           !dirArr.includes(ghostRight)) &&
-        !stateVars.pacmanInSight[ghostNumber]
+        (!stateVars.pacmanInSight[ghostNumber] ||
+          (stateVars.pacmanInSight[ghostNumber] &&
+            stateVars.ghostHexedStates[ghostNumber]))
       ) {
-        setRandomGhostDirection(ghostNumber);
+        if (
+          stateVars.pacmanInSight[ghostNumber] &&
+          stateVars.ghostHexedStates[ghostNumber] &&
+          dirArr.includes(ghostRight)
+        ) {
+          const ind = dirArr.indexOf(ghostRight);
+          dirArr.splice(ind, 1);
+          dirArr[Math.floor(Math.random() * dirArr.length)](ghostNumber);
+        } else {
+          setRandomGhostDirection(ghostNumber);
+        }
+        // setRandomGhostDirection(ghostNumber);
 
         stateVars.ghostInterval[ghostNumber] = setInterval(
           updateGhostArrayAndDOM,
@@ -243,8 +334,15 @@ function ghostPathFindingLogic(ghostNumber) {
           ghostNumber,
         );
       } else {
-        ghostRight(ghostNumber);
-
+        if (
+          stateVars.pacmanInSight[ghostNumber] &&
+          stateVars.ghostHexedStates[ghostNumber] &&
+          dirArr.includes(ghostRight)
+        ) {
+          ghostLeft(ghostNumber);
+        } else {
+          ghostRight(ghostNumber);
+        }
         setGhostSpeed(ghostNumber);
       }
 
@@ -288,10 +386,6 @@ export function checkForGhostLineOfSight(ghostNumber) {
               parseInt(stateVars.currentGhostCoor[ghostNumber][1])
           ) {
             stateVars.pacmanInSight[ghostNumber] = true;
-            docElems.pacmanLOSSound.play();
-            // gameFunc.loadAudioThroughAudioContext(
-            //   gameFunc.pacmanLOSSoundBufferDecoded,
-            // );
           }
         } else {
           stateVars.pacmanInSight[ghostNumber] = false;
@@ -326,10 +420,6 @@ export function checkForGhostLineOfSight(ghostNumber) {
               stateVars.currentPacmanCoor[1]
           ) {
             stateVars.pacmanInSight[ghostNumber] = true;
-            docElems.pacmanLOSSound.play();
-            // gameFunc.loadAudioThroughAudioContext(
-            //   gameFunc.pacmanLOSSoundBufferDecoded,
-            // );
           }
         } else {
           stateVars.pacmanInSight[ghostNumber] = false;
@@ -376,10 +466,6 @@ export function checkForGhostLineOfSight(ghostNumber) {
               stateVars.currentPacmanCoor[0]
           ) {
             stateVars.pacmanInSight[ghostNumber] = true;
-            docElems.pacmanLOSSound.play();
-            // gameFunc.loadAudioThroughAudioContext(
-            //   gameFunc.pacmanLOSSoundBufferDecoded,
-            // );
           }
         } else {
           stateVars.pacmanInSight[ghostNumber] = false;
@@ -413,10 +499,6 @@ export function checkForGhostLineOfSight(ghostNumber) {
               stateVars.currentGhostCoor[ghostNumber][0]
           ) {
             stateVars.pacmanInSight[ghostNumber] = true;
-            docElems.pacmanLOSSound.play();
-            // gameFunc.loadAudioThroughAudioContext(
-            //   gameFunc.pacmanLOSSoundBufferDecoded,
-            // );
           }
         } else {
           stateVars.pacmanInSight[ghostNumber] = false;
@@ -477,12 +559,23 @@ export function updateGhostArrayAndDOM(ghostNumber) {
       ];
     // Check for gameOver if ghost hits pacman
     if (updatedGhostCell.includes("pacman")) {
-      pacman.removePacmanFromState();
-      pacman.removePacmanFromDOM();
-      clearInterval(stateVars.ghostInterval[ghostNumber]);
-      pacman.handleGameOver();
+      if (stateVars.ghostHexedStates[ghostNumber]) {
+        docElems.ghostSwallowSound.play();
+        stateVars.score += 10;
+        docElems.scoreValue.innerHTML = stateVars.score;
+        pacman.handleNewHighScore();
+        removeGhostHexState(ghostNumber);
+        populateGhostinArrayandDOM(ghostNumber);
 
-      stateVars.currentGhostCoor[ghostNumber] = prevGhostCoor;
+        return;
+      } else {
+        pacman.removePacmanFromState();
+        pacman.removePacmanFromDOM();
+        clearInterval(stateVars.ghostInterval[ghostNumber]);
+        pacman.handleGameOver();
+
+        stateVars.currentGhostCoor[ghostNumber] = prevGhostCoor;
+      }
     }
     updatedGhostCell.push(`ghost${ghostNumber}`);
 
@@ -624,6 +717,7 @@ export function setRandomGhostDirection(ghostNumber) {
   if (dirArr.length > 0) {
     ranDir(ghostNumber);
   } else {
+    // If a dead end is reached by a ghost and there is another ghost blocking tne way, then the ghost waits for sometime in neutral position
     stateVars.ghostDirection[ghostNumber] = "Neutral";
     requestAnimationFrame(() => updateGhostAnimationDirection(ghostNumber));
 

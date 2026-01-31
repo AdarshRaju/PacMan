@@ -1,6 +1,7 @@
 import * as docElems from "../globalVariables/docElems.js";
 import stateVars from "../globalVariables/stateVars.js";
 import * as gameFunc from "./mainGameFunctions.js";
+import * as ghosts from "./ghostsLogic.js";
 
 function addPacmanToState() {
   let newPacmanCell =
@@ -74,10 +75,20 @@ export function populatePacmaninArrayandDOM() {
   addPacmanToDOM();
 }
 
+export function handleNewHighScore() {
+  if (stateVars.score > stateVars.highScore) {
+    stateVars.highScore = stateVars.score;
+    docElems.highScoreValue.innerHTML = stateVars.highScore;
+    localStorage.setItem(
+      "pacmanHighScore",
+      JSON.stringify(stateVars.highScore),
+    );
+  }
+}
+
 export function handleGameOver() {
   stateVars.gameOver = true;
-  // docElems.pacmanSound.pause();
-  // docElems.pacmanSound.removeEventListener("ended", gameFunc.pacmanSoundLoop);
+
   stateVars.pacmanAudio.source.stop();
 
   clearInterval(stateVars.pacmanInterval);
@@ -92,8 +103,68 @@ export function handleGameOver() {
   ].push("pacmanGameOver");
 
   addPacmanGameOverToDOM();
-  // docElems.gameOverSound.play();
-  gameFunc.loadAudioThroughAudioContext(gameFunc.pacmanGameOverBufferDecoded);
+
+  if (parseInt(stateVars.score) >= parseInt(stateVars.highScore)) {
+    docElems.newHighScoreSound.play();
+  } else if (docElems.foodCells.length === 0) {
+    docElems.allFoodFinishedSound.play();
+  } else {
+    gameFunc.loadAudioThroughAudioContext(gameFunc.pacmanGameOverBufferDecoded);
+  }
+}
+
+function handlePacmanPowerUpOnState() {
+  stateVars.poweredUp = true;
+  switch (stateVars.pacmanDirection) {
+    case "Up":
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
+      break;
+    case "Down":
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowDown" }),
+      );
+      break;
+    case "Right":
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowRight" }),
+      );
+      break;
+    case "Left":
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowLeft" }),
+      );
+      break;
+  }
+  console.log("stateVars.poweredUp is turned to: ", stateVars.poweredUp);
+  stateVars.ghostHexedStates.forEach((gs, i, array) => (array[i] = true));
+  console.log(
+    "stateVars.ghostHexedStates is now: ",
+    stateVars.ghostHexedStates,
+  );
+  [...document.querySelectorAll(".ghosts")].forEach((ghost) => {
+    ghost.classList.add("hexedghost");
+  });
+
+  // Clears any setTimeOut set from previous powerUp picked up by pacman
+  clearInterval(stateVars.pacmanPoweredUpSetTimeOut);
+  stateVars.pacmanPoweredUpSetTimeOut = setTimeout(
+    handlePacmanPowerUpOffState,
+    stateVars.pacmanPoweredUpTime,
+  );
+}
+
+function handlePacmanPowerUpOffState() {
+  stateVars.poweredUp = false;
+  stateVars.ghostHexedStates.forEach((gs, i, array) => (array[i] = false));
+  [...document.querySelectorAll(".ghosts")].forEach((ghost) => {
+    ghost.classList.remove("hexedghost");
+  });
+
+  console.log("stateVars.poweredUp is turned to: ", stateVars.poweredUp);
+  console.log(
+    "stateVars.ghostHexedStates is now: ",
+    stateVars.ghostHexedStates,
+  );
 }
 
 function updatePacmanArrayAndDOM() {
@@ -166,11 +237,31 @@ function updatePacmanArrayAndDOM() {
       stateVars.pathArray[stateVars.currentPacmanCoor[0]][
         stateVars.currentPacmanCoor[1]
       ];
-    // Check for gameOver if pacman hits ghost
-    if (updatedPacmanCell.some((element) => element.includes("ghost"))) {
-      stateVars.currentPacmanCoor = prevPacmanCoord;
 
-      handleGameOver();
+    // Check for gameOver or ghost swallow if pacman hits ghost
+    const cellWithGhostCheck = updatedPacmanCell.filter((element) =>
+      element.includes("ghost"),
+    );
+
+    if (cellWithGhostCheck.length > 0) {
+      console.log("ghost hit by pacman is: ", cellWithGhostCheck[0].slice(5));
+      const ghostNumber = parseInt(cellWithGhostCheck[0].slice(5));
+
+      if (stateVars.ghostHexedStates[ghostNumber]) {
+        docElems.ghostSwallowSound.play();
+        stateVars.score += 10;
+        docElems.scoreValue.innerHTML = stateVars.score;
+        handleNewHighScore();
+
+        ghosts.removeGhostFromState(ghostNumber);
+        ghosts.removeGhostFromDOM(ghostNumber);
+        ghosts.populateGhostinArrayandDOM(ghostNumber);
+        ghosts.removeGhostHexState(ghostNumber);
+      } else {
+        stateVars.currentPacmanCoor = prevPacmanCoord;
+
+        handleGameOver();
+      }
     } else {
       // If food is in the new cell without a ghost, remove 'food' from state array and DOM and update score
 
@@ -182,19 +273,24 @@ function updatePacmanArrayAndDOM() {
           stateVars.currentPacmanCoor[0]
         ].children[stateVars.currentPacmanCoor[1]].classList.remove("food");
         stateVars.score += 1;
-        if (stateVars.score > stateVars.highScore) {
-          stateVars.highScore = stateVars.score;
-          docElems.highScoreValue.innerHTML = stateVars.highScore;
-          localStorage.setItem(
-            "pacmanHighScore",
-            JSON.stringify(stateVars.highScore),
-          );
-        }
+
+        handleNewHighScore();
         docElems.scoreValue.innerHTML = stateVars.score;
         if (docElems.foodCells.length === 0) {
           handleGameOver();
           docElems.scoreValue.innerHTML = "Congrats! You won!";
         }
+      }
+      if (updatedPacmanCell.some((element) => element.includes("powerUp"))) {
+        const powerUpInd = updatedPacmanCell.findIndex((subitem) =>
+          subitem.includes("powerUp"),
+        );
+        updatedPacmanCell.splice(powerUpInd, 1);
+        docElems.mainGridContainer.children[
+          stateVars.currentPacmanCoor[0]
+        ].children[stateVars.currentPacmanCoor[1]].classList.remove("powerUp");
+
+        handlePacmanPowerUpOnState();
       }
       updatedPacmanCell.push("pacman");
       if (!stateVars.gameOver) {

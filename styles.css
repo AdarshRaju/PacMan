@@ -1,36 +1,40 @@
 :root {
   --food-color: rgb(235, 200, 4);
+  --powerUp-color: rgb(222, 143, 41);
   --path-cell-color: rgba(56, 56, 46, 0.801);
   --main-grid-background-color: rgba(101, 101, 227, 0.278);
-  --ghost0-color: orange;
-  --ghost1-color: green;
-  --ghost2-color: blue;
-  --ghost3-color: purple;
+  --ghost0-color: rgba(255, 166, 0, 0.503);
+  --ghost1-color: rgba(0, 128, 0, 0.5);
+  --ghost2-color: rgba(0, 0, 255, 0.501);
+  --ghost3-color: rgba(128, 0, 128, 0.514);
+  --ghost--hexed: rgba(77, 77, 145, 0.501);
 }
 
 body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 90vh;
+  /* min-height: 90vh; */
+  height: 80vh;
   background-color: rgb(172, 163, 180);
   font-family: "Turret Road", sans-serif;
   font-family: "Syne Mono", monospace;
   font-family: "Syncopate", sans-serif;
   background-image: url("./images/pacman\ background.png");
+  background-size: cover;
 }
 
 header {
   background-color: rgb(225, 67, 10);
 }
 main {
-  margin-left: 500px;
-  margin-top: 200px;
+  margin-left: 35vw;
+  margin-top: 50vh;
 }
 #score,
 #highScore {
   display: flex;
-  font-size: 20px;
+  font-size: 14px;
   margin-bottom: 15px;
   align-items: flex-start;
   /* font-family: "Turret Road", sans-serif; */
@@ -53,7 +57,12 @@ main {
 }
 
 #scoresContainer {
-  color: rgb(178, 244, 244);
+  color: rgb(11, 12, 12);
+  background-color: rgba(240, 248, 255, 0.686);
+  border-radius: 15px;
+  width: 500px;
+  padding-top: 3px;
+  padding-left: 3px;
 }
 
 #mainGridContainer {
@@ -125,6 +134,20 @@ button:hover {
   height: 50%;
   width: 50%;
   background: radial-gradient(var(--food-color) 0%, transparent 50%);
+}
+
+.powerUp {
+  position: relative;
+}
+
+.powerUp::before {
+  position: absolute;
+  content: "";
+  /* right: 50%; */
+  /* top: 50%; */
+  height: 90%;
+  width: 90%;
+  background: radial-gradient(var(--powerUp-color) 45%, transparent 60%);
 }
 
 .pacman {
@@ -302,4 +325,8 @@ button:hover {
 }
 .ghosts3 {
   fill: rgba(128, 0, 128, 0.514);
+}
+
+.hexedghost {
+  fill: var(--ghost--hexed);
 }

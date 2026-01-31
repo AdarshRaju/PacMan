@@ -3,6 +3,7 @@ import stateVars from "./globalVariables/stateVars.js";
 import * as gameFunc from "./functions/mainGameFunctions.js";
 import * as pacmanLogic from "./functions/pacmanLogic.js";
 import * as ghostLogic from "./functions/ghostsLogic.js";
+import * as powerUpLogic from "./functions/powerUpGenerationLogic.js";
 import * as foodGen from "./functions/foodGenerationLogic.js";
 
 docElems.loadGridPattern.addEventListener("click", async () => {
@@ -53,9 +54,19 @@ docElems.loadGridPattern.addEventListener("click", async () => {
     for (let i = 0; i < stateVars.noOfGhosts; i++) {
       // populateGhostinArrayandDOM(ghostnumber) deals with all the logic for one ghost
       ghostLogic.populateGhostinArrayandDOM(i);
+      stateVars.ghostHexedStates.push(false);
+    }
+    for (let i = 0; i < stateVars.noOfPowerUps; i++) {
+      // populatePowerUpsinArrayandDOM(powerUpnumber) deals with all the logic for one power up
+      powerUpLogic.populatePowerUpsinArrayandDOM(i);
     }
 
     foodGen.populateFoodinArrayandDOM();
+
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: "smooth",
+    });
   } catch (err) {
     if (err.name === "AbortError") {
       console.log("User has cancelled the Select File operation ");

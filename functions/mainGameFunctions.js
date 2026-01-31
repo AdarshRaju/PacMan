@@ -39,6 +39,7 @@ export function resetBoard() {
   // Reset all the class to initial state
 
   stateVars.gameOver = false;
+  stateVars.poweredUp = false;
   clearInterval(stateVars.pacmanInterval);
   stateVars.ghostInterval.forEach((ghostInt) => clearInterval(ghostInt));
 
@@ -46,6 +47,8 @@ export function resetBoard() {
   stateVars.ghostInterval = [];
   stateVars.currentGhostCoor = [];
   stateVars.currentPacmanCoor = [];
+  stateVars.currentPowerUpCoor = [];
+  stateVars.ghostHexedStates = [];
   docElems.mainGridContainer.innerHTML = "";
   docElems.bigGhostsDisplay.innerHTML = "";
   stateVars.score = 0;
@@ -72,33 +75,33 @@ export function populatePathStateArrayandDOM(pathCoord) {
 export function handleKeyPress(e) {
   e.preventDefault();
   clearInterval(stateVars.pacmanInterval);
+  let pacmanSpeed = stateVars.poweredUp
+    ? stateVars.pacmanPoweredUpSpeed
+    : stateVars.pacmanSpeed;
 
   switch (e.key) {
     case "ArrowUp":
-      stateVars.pacmanInterval = setInterval(
-        pacmanLogic.pacmanUp,
-        stateVars.pacmanSpeed,
-      );
+      stateVars.pacmanInterval = setInterval(pacmanLogic.pacmanUp, pacmanSpeed);
 
       break;
     case "ArrowDown":
       stateVars.pacmanInterval = setInterval(
         pacmanLogic.pacmanDown,
-        stateVars.pacmanSpeed,
+        pacmanSpeed,
       );
 
       break;
     case "ArrowLeft":
       stateVars.pacmanInterval = setInterval(
         pacmanLogic.pacmanLeft,
-        stateVars.pacmanSpeed,
+        pacmanSpeed,
       );
 
       break;
     case "ArrowRight":
       stateVars.pacmanInterval = setInterval(
         pacmanLogic.pacmanRight,
-        stateVars.pacmanSpeed,
+        pacmanSpeed,
       );
 
       break;
@@ -143,4 +146,8 @@ export const pacmanGameOverBufferDecoded = await loadBuffer(
 
 export const pacmanLOSSoundBufferDecoded = await loadBuffer(
   "../sounds/jump-and-fight.mp3",
+);
+
+export const bonusSoundBufferDecoded = await loadBuffer(
+  "../sounds/getting-a-bonus.mp3",
 );
