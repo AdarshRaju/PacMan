@@ -13,9 +13,15 @@ export function ghosts(ghostNumber) {
   return document.querySelectorAll(`.ghosts${ghostNumber}`);
   // return document.getElementsByClassName(`ghosts${ghostNumber}`);
 }
-export const pacmanLOSSound = new Audio("./sounds/jump-and-fight.mp3");
-export const ghostSwallowSound = new Audio("./sounds/getting-a-bonus.mp3");
-export const newHighScoreSound = new Audio("./sounds/newHighScore.mp3");
+export const pacmanLOSSound = new Audio(
+  new URL("../sounds/jump-and-fight.mp3", import.meta.url),
+);
+export const ghostSwallowSound = new Audio(
+  new URL("../sounds/getting-a-bonus.mp3", import.meta.url),
+);
+export const newHighScoreSound = new Audio(
+  new URL("../sounds/newHighScore.mp3", import.meta.url),
+);
 export const allFoodFinishedSound = new Audio(
-  "./sounds/allFood-achievement-bell-600.wav",
+  new URL("../sounds/allFood-achievement-bell-600.wav", import.meta.url),
 );

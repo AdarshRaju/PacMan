@@ -11,19 +11,21 @@ docElems.loadGridPattern.addEventListener("click", async () => {
   stateVars.pacmanAudio = null;
 
   try {
-    const [handle] = await window.showOpenFilePicker({
-      multiple: false,
-      startIn: "desktop",
-      types: [
-        {
-          description: "grid coordinates in json array format",
-          accept: { "application/json": [".txt"] },
-        },
-      ],
-    });
-    const file = await handle.getFile();
-    const text = await file.text();
+    // const [handle] = await window.showOpenFilePicker({
+    //   multiple: false,
+    //   startIn: "desktop",
+    //   types: [
+    //     {
+    //       description: "grid coordinates in json array format",
+    //       accept: { "application/json": [".txt"] },
+    //     },
+    //   ],
+    // });
+    const handle = await fetch("./stageGrids/Size 25 grid 1.txt");
+    // const file = await handle.getFile();
+    // const text = await file.text();
 
+    const text = await handle.text();
     let jsonExtract;
 
     try {

@@ -137,17 +137,17 @@ export function loadAudioThroughAudioContext(
 }
 
 export const pacmanSoundBufferDecoded = await loadBuffer(
-  "../sounds/PAC-MAN 3s.wav",
+  new URL("../sounds/PAC-MAN_3s.wav", import.meta.url),
 );
 
 export const pacmanGameOverBufferDecoded = await loadBuffer(
-  "../sounds/Pacman Game Over - QuickSounds.com.mp3",
+  new URL("../sounds/Pacman_GameOver.mp3", import.meta.url),
 );
 
 export const pacmanLOSSoundBufferDecoded = await loadBuffer(
-  "../sounds/jump-and-fight.mp3",
+  new URL("../sounds/jump-and-fight.mp3", import.meta.url),
 );
 
 export const bonusSoundBufferDecoded = await loadBuffer(
-  "../sounds/getting-a-bonus.mp3",
+  new URL("../sounds/getting-a-bonus.mp3", import.meta.url),
 );

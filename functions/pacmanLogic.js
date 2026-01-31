@@ -135,12 +135,9 @@ function handlePacmanPowerUpOnState() {
       );
       break;
   }
-  console.log("stateVars.poweredUp is turned to: ", stateVars.poweredUp);
+
   stateVars.ghostHexedStates.forEach((gs, i, array) => (array[i] = true));
-  console.log(
-    "stateVars.ghostHexedStates is now: ",
-    stateVars.ghostHexedStates,
-  );
+
   [...document.querySelectorAll(".ghosts")].forEach((ghost) => {
     ghost.classList.add("hexedghost");
   });
@@ -159,12 +156,6 @@ function handlePacmanPowerUpOffState() {
   [...document.querySelectorAll(".ghosts")].forEach((ghost) => {
     ghost.classList.remove("hexedghost");
   });
-
-  console.log("stateVars.poweredUp is turned to: ", stateVars.poweredUp);
-  console.log(
-    "stateVars.ghostHexedStates is now: ",
-    stateVars.ghostHexedStates,
-  );
 }
 
 function updatePacmanArrayAndDOM() {
@@ -244,7 +235,6 @@ function updatePacmanArrayAndDOM() {
     );
 
     if (cellWithGhostCheck.length > 0) {
-      console.log("ghost hit by pacman is: ", cellWithGhostCheck[0].slice(5));
       const ghostNumber = parseInt(cellWithGhostCheck[0].slice(5));
 
       if (stateVars.ghostHexedStates[ghostNumber]) {
