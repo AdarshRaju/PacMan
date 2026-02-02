@@ -2,6 +2,7 @@ import * as docElems from "../globalVariables/docElems.js";
 import stateVars from "../globalVariables/stateVars.js";
 import * as pacman from "./pacmanLogic.js";
 
+// addGhostToState(ghostNumber) is used to add a particular ghost to the centralised array denoting the placement of characters in the board
 function addGhostToState(ghostNumber) {
   let newGhostCell =
     stateVars.pathArray[stateVars.currentGhostCoor[ghostNumber][0]][
@@ -11,6 +12,7 @@ function addGhostToState(ghostNumber) {
   newGhostCell.push(`ghost${ghostNumber}`);
 }
 
+// addGhostToBigDisplayDOM(ghostNumber) is used to display the large ghosts with the eye direction indicators at the bottom of the page
 function addGhostToBigDisplayDOM(ghostNumber) {
   const ghostSVGDisplay = docElems.ghostSVG.cloneNode(true);
   ghostSVGDisplay.classList.add(`ghosts${ghostNumber}`, `ghosts`);
@@ -19,6 +21,7 @@ function addGhostToBigDisplayDOM(ghostNumber) {
   docElems.bigGhostsDisplay.appendChild(ghostSVGDisplay);
 }
 
+// addGhostToBoardDOM(ghostNumber) is used to add ghost at every step of ghost movement through the path cells
 function addGhostToBoardDOM(ghostNumber) {
   const ghostSVGDisplay = docElems.ghostSVG.cloneNode(true);
   ghostSVGDisplay.classList.add(`ghosts${ghostNumber}`, `ghosts`);
@@ -49,6 +52,7 @@ function addGhostToBoardDOM(ghostNumber) {
   );
 }
 
+// removeGhostFromState(ghostNumber) is used to remove a particular ghost from the centralised array denoting the placement of characters in the board
 export function removeGhostFromState(ghostNumber) {
   const ghostInd = stateVars.pathArray[
     stateVars.currentGhostCoor[ghostNumber][0]
@@ -60,6 +64,7 @@ export function removeGhostFromState(ghostNumber) {
   }
 }
 
+// removeGhostFromDOM(ghostNumber) is used to remove the DOM element of a ghost from the HTML, at every step of ghost movement
 export function removeGhostFromDOM(ghostNumber) {
   document.querySelector(`#ghostInBoard${ghostNumber}`).remove();
 }
@@ -124,11 +129,13 @@ function updateGhostAnimationDirection(ghostNumber) {
 
 // populateGhostinArrayandDOM() is for the initial placement of ghost in a random path cell in the board
 export function populateGhostinArrayandDOM(ghostNumber) {
-  let randomIndex = Math.floor(
-    Math.random() * stateVars.ghostCageCoords.length,
-  );
-  stateVars.currentGhostCoor[ghostNumber] =
-    stateVars.ghostCageCoords[randomIndex];
+  const filteredGhostOrigin = stateVars.ghostCageCoords.filter(([row, col]) => {
+    return !stateVars.currentGhostCoor.some(([ghostRow, ghostCol]) => {
+      return row === ghostRow && col === ghostCol;
+    });
+  });
+  let randomIndex = Math.floor(Math.random() * filteredGhostOrigin.length);
+  stateVars.currentGhostCoor[ghostNumber] = filteredGhostOrigin[randomIndex];
 
   addGhostToState(ghostNumber);
   if (
@@ -156,6 +163,10 @@ function setGhostSpeed(ghostNumber) {
       ghostNumber,
     );
   } else {
+    console.log(
+      "stateVars.pacmanInSight[ghostNumber] activated is: ",
+      stateVars.pacmanInSight[ghostNumber],
+    );
     docElems.pacmanLOSSound.play();
     stateVars.ghostInterval[ghostNumber] = setInterval(
       updateGhostArrayAndDOM,
@@ -342,12 +353,14 @@ export function ghostPathFindingLogic(ghostNumber) {
 // If pacman is in the direct line of sight of a ghost, it will start moving faster
 export function checkForGhostLineOfSight(ghostNumber) {
   if (
+    // First checking if a ghost and pacaman are in the same row
     stateVars.currentGhostCoor[ghostNumber][0] ===
     stateVars.currentPacmanCoor[0]
   ) {
     switch (stateVars.ghostDirection[ghostNumber]) {
       case "Right":
         if (
+          // If a ghost is facing right and pacman is to the left of the ghost
           stateVars.currentGhostCoor[ghostNumber][1] <
           stateVars.currentPacmanCoor[1]
         ) {
@@ -375,6 +388,7 @@ export function checkForGhostLineOfSight(ghostNumber) {
               parseInt(stateVars.currentGhostCoor[ghostNumber][1])
           ) {
             stateVars.pacmanInSight[ghostNumber] = true;
+            console.log("Pacman at right LOS activated");
           }
         } else {
           stateVars.pacmanInSight[ghostNumber] = false;
@@ -409,6 +423,7 @@ export function checkForGhostLineOfSight(ghostNumber) {
               stateVars.currentPacmanCoor[1]
           ) {
             stateVars.pacmanInSight[ghostNumber] = true;
+            console.log("Pacman at left LOS activated");
           }
         } else {
           stateVars.pacmanInSight[ghostNumber] = false;
@@ -422,6 +437,7 @@ export function checkForGhostLineOfSight(ghostNumber) {
         break;
     }
   } else if (
+    // Checking if pacman and ghost are in the same column
     stateVars.currentGhostCoor[ghostNumber][1] ===
     stateVars.currentPacmanCoor[1]
   ) {
@@ -455,6 +471,7 @@ export function checkForGhostLineOfSight(ghostNumber) {
               stateVars.currentPacmanCoor[0]
           ) {
             stateVars.pacmanInSight[ghostNumber] = true;
+            console.log("Pacman at Up LOS activated");
           }
         } else {
           stateVars.pacmanInSight[ghostNumber] = false;
@@ -491,6 +508,7 @@ export function checkForGhostLineOfSight(ghostNumber) {
           }
         } else {
           stateVars.pacmanInSight[ghostNumber] = false;
+          console.log("Pacman at down LOS activated");
         }
         break;
       case "Right":

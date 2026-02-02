@@ -64,7 +64,6 @@ docElems.loadGridPattern.addEventListener("click", async () => {
     gameFunc.handleGamePause();
     await gameFunc.playStartUpMusic();
     gameFunc.handleGameUnPause();
-    console.log("next step");
   } catch (err) {
     if (err.name === "AbortError") {
       console.log("User has cancelled the Select File operation ");

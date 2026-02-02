@@ -8,7 +8,8 @@
   --ghost2-color: rgba(0, 0, 255, 0.501);
   --ghost3-color: rgba(128, 0, 128, 0.514);
   --ghost--hexed: rgba(77, 77, 145, 0.501);
-  --gate-cell-color: rgba(151, 144, 144, 0.503);
+  --gate-cell-color1: rgba(137, 60, 60, 0.503);
+  --gate-cell-color2: rgba(81, 74, 13, 0.503);
 }
 
 body {
@@ -87,6 +88,8 @@ main {
   height: 100%;
   width: 100%;
   border: solid transparent 1px;
+  display: flex;
+  position: relative;
 }
 
 .pathCell {
@@ -96,9 +99,20 @@ main {
 }
 
 .gateCell {
-  background-color: var(--gate-cell-color);
+  background-color: var(--gate-cell-color1);
+  width: 90%;
   border: none;
   border-top: solid black 5px;
+  animation: gateFlicker 0.25s infinite;
+}
+
+@keyframes gateFlicker {
+  from {
+    background-color: var(--gate-cell-color1);
+  }
+  to {
+    background-color: var(--gate-cell-color2);
+  }
 }
 
 #btnsContainer {
@@ -319,6 +333,14 @@ button:hover {
       var(--path-cell-color) 135deg
     );
   }
+}
+#ghostinBoard1,
+#ghostinBoard2,
+#ghostinBoard3,
+#ghostinBoard4 {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .ghosts0 {

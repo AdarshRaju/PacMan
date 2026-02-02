@@ -11,7 +11,6 @@ export const foodCells = document.getElementsByClassName("food");
 export const powerUpCells = document.getElementsByClassName("powerUp");
 export function ghosts(ghostNumber) {
   return document.querySelectorAll(`.ghosts${ghostNumber}`);
-  // return document.getElementsByClassName(`ghosts${ghostNumber}`);
 }
 export const pacmanLOSSound = new Audio(
   new URL("../sounds/jump-and-fight.mp3", import.meta.url),

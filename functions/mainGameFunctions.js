@@ -50,6 +50,11 @@ export function resetBoard() {
   stateVars.currentPacmanCoor = [];
   stateVars.currentPowerUpCoor = [];
   stateVars.ghostHexedStates = [];
+  stateVars.filteredpathCoord = [];
+  stateVars.ghostCageCoords = [];
+  stateVars.pacmanInSight = [];
+  stateVars.poweredUp = false;
+  stateVars.ghostHexedStates = [];
   docElems.mainGridContainer.innerHTML = "";
   docElems.bigGhostsDisplay.innerHTML = "";
   stateVars.score = 0;
