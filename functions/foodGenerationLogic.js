@@ -8,7 +8,6 @@ export function populateFoodinArrayandDOM() {
       if (
         colItem &&
         !colItem.includes("pacman") &&
-        // !colItem.includes("ghost") &&
         !colItem.some((subitem) => subitem.includes("powerUp"))
       ) {
         colItem.push("food");
@@ -23,7 +22,6 @@ export function populateFoodinArrayandDOM() {
         colItem &&
         colItem.includes("food") &&
         !colItem.includes("pacman") &&
-        // !colItem.includes("ghost") &&
         !colItem.some((subitem) => subitem.includes("powerUp"))
       ) {
         docElems.mainGridContainer.children[rowIndex].children[

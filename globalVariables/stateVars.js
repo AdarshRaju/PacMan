@@ -13,6 +13,10 @@ export default {
   ghostLOSSpeed: 100,
   // noOfGhosts is the no of ghosts in the board
   noOfGhosts: 4,
+  // gateCoord is the location of the gate for the ghosts cage in row#, col# of the grid
+  gateCoord: [11, 12],
+  // ghostCageCoords is the coordinates in row#, col# of the cells which make up the ghost cage in the game board
+  ghostCageCoords: [],
   // mainGridArray will have initially have false only values in a gridsize*gridsize 2D nested array
   mainGridArray: [],
   // noOfPowerUps is the no of power ups that will be generated in the board
@@ -21,6 +25,8 @@ export default {
   pathArray: [],
   // pathCoord is the value of the path cells in [row#, col#] format
   pathCoord: [],
+  // filteredpathCoord are the ghostcage cells removed from pathCoord
+  filteredpathCoord: [],
   // pacmanDirection is used to keep track of which direction pacman is facing
   pacmanDirection: "right",
   // ghostDirection is used to keep track of which direction ghost is facing
@@ -35,8 +41,9 @@ export default {
   score: 0,
   // highScore is tracked through a local file written to the disc
   highScore: 0,
-  // gameOver state is reached by eating all the food or touching a ghost
+  // gameOver state is reached by eating all the food or touching an unhexed ghost
   gameOver: true,
+  paused: false,
   // pacmanInterval is used for assigning a setInterval function to the movement of pacman along a straight path
   pacmanInterval: null,
   // ghostInterval is used for assigning a setInterval function to the movement of ghost along a straight path

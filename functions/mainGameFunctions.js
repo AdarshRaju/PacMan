@@ -1,6 +1,7 @@
 import * as docElems from "../globalVariables/docElems.js";
 import stateVars from "../globalVariables/stateVars.js";
 import * as pacmanLogic from "./pacmanLogic.js";
+import * as ghosts from "./ghostsLogic.js";
 
 // generation of HTML + CSS based main grid
 export function createMainGrid() {
@@ -72,6 +73,38 @@ export function populatePathStateArrayandDOM(pathCoord) {
   });
 }
 
+// populateGhostCageCoords() is used to specify the pathcells that are allocated for use as ghost cage cells
+export function populateGhostCageCoords() {
+  for (let i = 12; i < 13; i++) {
+    for (let j = 10; j < 15; j++) {
+      stateVars.ghostCageCoords.push([i, j]);
+    }
+  }
+
+  stateVars.filteredpathCoord = stateVars.pathCoord.filter(([row, col]) => {
+    return !stateVars.ghostCageCoords.some(([cageRow, cageCol]) => {
+      return row === cageRow && col === cageCol;
+    });
+  });
+}
+
+export function handleGateLogic(rowNum, colNum) {
+  docElems.mainGridContainer.children[rowNum].children[colNum].classList.add(
+    "gateCell",
+  );
+  setTimeout(() => {
+    docElems.mainGridContainer.children[rowNum].children[
+      colNum
+    ].classList.remove("gateCell");
+    stateVars.pathCoord.push([rowNum, colNum]);
+    stateVars.pathArray[rowNum][colNum] = ["path"];
+
+    docElems.mainGridContainer.children[rowNum].children[colNum].classList.add(
+      "pathCell",
+    );
+  }, 5000);
+}
+
 export function handleKeyPress(e) {
   e.preventDefault();
   clearInterval(stateVars.pacmanInterval);
@@ -106,6 +139,59 @@ export function handleKeyPress(e) {
 
       break;
   }
+}
+
+export function handlePacmanMovementReStart() {
+  switch (stateVars.pacmanDirection) {
+    case "Up":
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
+      break;
+    case "Down":
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowDown" }),
+      );
+      break;
+    case "Right":
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowRight" }),
+      );
+      break;
+    case "Left":
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowLeft" }),
+      );
+      break;
+  }
+}
+
+export function handleGamePause() {
+  stateVars.paused = true;
+  stateVars.pacmanAudio?.source.stop();
+  stateVars.pacmanAudio = null;
+  clearInterval(stateVars.pacmanInterval);
+
+  stateVars.ghostInterval.forEach((ghostInt) => {
+    if (ghostInt !== null) {
+      clearInterval(ghostInt);
+    }
+  });
+}
+
+export function handleGameUnPause() {
+  stateVars.paused = false;
+  stateVars.pacmanAudio = loadAudioThroughAudioContext(
+    pacmanSoundBufferDecoded,
+    { loop: true },
+  );
+
+  for (let i = 0; i < stateVars.noOfGhosts; i++) {
+    ghosts.ghostPathFindingLogic(i);
+  }
+}
+
+export async function playStartUpMusic() {
+  docElems.startUpSound.play();
+  await new Promise((r) => (docElems.startUpSound.onended = r));
 }
 
 const ctx = new AudioContext();
@@ -151,3 +237,7 @@ export const pacmanLOSSoundBufferDecoded = await loadBuffer(
 export const bonusSoundBufferDecoded = await loadBuffer(
   new URL("../sounds/getting-a-bonus.mp3", import.meta.url),
 );
+
+// export const startUpSoundBufferDecoded = await loadBuffer(
+//   new URL("../sounds/pacman_beginning.wav", import.meta.url),
+// );

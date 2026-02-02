@@ -8,6 +8,7 @@
   --ghost2-color: rgba(0, 0, 255, 0.501);
   --ghost3-color: rgba(128, 0, 128, 0.514);
   --ghost--hexed: rgba(77, 77, 145, 0.501);
+  --gate-cell-color: rgba(151, 144, 144, 0.503);
 }
 
 body {
@@ -92,6 +93,12 @@ main {
   background-color: var(--path-cell-color);
   border: solid transparent 1px;
   border-radius: 2px;
+}
+
+.gateCell {
+  background-color: var(--gate-cell-color);
+  border: none;
+  border-top: solid black 5px;
 }
 
 #btnsContainer {

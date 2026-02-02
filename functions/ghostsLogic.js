@@ -124,19 +124,11 @@ function updateGhostAnimationDirection(ghostNumber) {
 
 // populateGhostinArrayandDOM() is for the initial placement of ghost in a random path cell in the board
 export function populateGhostinArrayandDOM(ghostNumber) {
-  // filteredArray returns only the coordinates not occupied by pacman or other ghosts
-  let filteredArray = stateVars.pathCoord.filter(([row, col]) => {
-    return !(
-      (row === stateVars.currentPacmanCoor[0] &&
-        col === stateVars.currentPacmanCoor[1]) ||
-      stateVars.currentGhostCoor?.some(([ghostNumRow, ghostNumCol]) => {
-        return row === ghostNumRow && col === ghostNumCol;
-      })
-    );
-  });
-
-  let randomIndex = Math.floor(Math.random() * filteredArray.length);
-  stateVars.currentGhostCoor[ghostNumber] = filteredArray[randomIndex];
+  let randomIndex = Math.floor(
+    Math.random() * stateVars.ghostCageCoords.length,
+  );
+  stateVars.currentGhostCoor[ghostNumber] =
+    stateVars.ghostCageCoords[randomIndex];
 
   addGhostToState(ghostNumber);
   if (
@@ -173,7 +165,7 @@ function setGhostSpeed(ghostNumber) {
     );
   }
 }
-function ghostPathFindingLogic(ghostNumber) {
+export function ghostPathFindingLogic(ghostNumber) {
   clearInterval(stateVars.ghostInterval[ghostNumber]);
   const dirArr = getAvailableDirectionsGhost(ghostNumber);
   // The ghost will continue moving forward unless it hits a wall or finds an alternative path
@@ -240,7 +232,6 @@ function ghostPathFindingLogic(ghostNumber) {
         } else {
           setRandomGhostDirection(ghostNumber);
         }
-        // setRandomGhostDirection(ghostNumber);
 
         stateVars.ghostInterval[ghostNumber] = setInterval(
           updateGhostArrayAndDOM,
@@ -282,7 +273,6 @@ function ghostPathFindingLogic(ghostNumber) {
         } else {
           setRandomGhostDirection(ghostNumber);
         }
-        // setRandomGhostDirection(ghostNumber);
 
         stateVars.ghostInterval[ghostNumber] = setInterval(
           updateGhostArrayAndDOM,
@@ -325,7 +315,6 @@ function ghostPathFindingLogic(ghostNumber) {
         } else {
           setRandomGhostDirection(ghostNumber);
         }
-        // setRandomGhostDirection(ghostNumber);
 
         stateVars.ghostInterval[ghostNumber] = setInterval(
           updateGhostArrayAndDOM,
@@ -518,7 +507,7 @@ export function checkForGhostLineOfSight(ghostNumber) {
 
 // updateGhostArrayAndDOM() is used to move the ghost along the path cells available to it
 export function updateGhostArrayAndDOM(ghostNumber) {
-  if (!stateVars.gameOver) {
+  if (!stateVars.gameOver && !stateVars.paused) {
     removeGhostFromState(ghostNumber);
 
     removeGhostFromDOM(ghostNumber);
@@ -581,7 +570,7 @@ export function updateGhostArrayAndDOM(ghostNumber) {
 
     addGhostToBoardDOM(ghostNumber);
     requestAnimationFrame(() => updateGhostAnimationDirection(ghostNumber));
-    if (!stateVars.gameOver) {
+    if (!stateVars.gameOver && !stateVars.paused) {
       checkForGhostLineOfSight(ghostNumber);
       ghostPathFindingLogic(ghostNumber);
     }

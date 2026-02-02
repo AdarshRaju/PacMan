@@ -25,3 +25,7 @@ export const newHighScoreSound = new Audio(
 export const allFoodFinishedSound = new Audio(
   new URL("../sounds/allFood-achievement-bell-600.wav", import.meta.url),
 );
+
+export const startUpSound = new Audio(
+  new URL("../sounds/pacman_beginning.wav", import.meta.url),
+);

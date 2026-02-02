@@ -11,19 +11,7 @@ docElems.loadGridPattern.addEventListener("click", async () => {
   stateVars.pacmanAudio = null;
 
   try {
-    // const [handle] = await window.showOpenFilePicker({
-    //   multiple: false,
-    //   startIn: "desktop",
-    //   types: [
-    //     {
-    //       description: "grid coordinates in json array format",
-    //       accept: { "application/json": [".txt"] },
-    //     },
-    //   ],
-    // });
-    const handle = await fetch("./stageGrids/Size 25 grid 1.txt");
-    // const file = await handle.getFile();
-    // const text = await file.text();
+    const handle = await fetch("./stageGrids/Size 25 grid with cage.json");
 
     const text = await handle.text();
     let jsonExtract;
@@ -33,6 +21,7 @@ docElems.loadGridPattern.addEventListener("click", async () => {
       gameFunc.generateFalseOnlyGrid();
       gameFunc.resetBoard();
       stateVars.pathCoord = [...jsonExtract];
+      gameFunc.populateGhostCageCoords();
     } catch (err) {
       console.error(err);
     }
@@ -47,7 +36,9 @@ docElems.loadGridPattern.addEventListener("click", async () => {
     gameFunc.createMainGrid();
     // populatePathStateArrayandDOM generates the path for pacman and ghosts from the coordinates received
     gameFunc.populatePathStateArrayandDOM(stateVars.pathCoord);
+
     pacmanLogic.populatePacmaninArrayandDOM();
+
     stateVars.pacmanAudio = gameFunc.loadAudioThroughAudioContext(
       gameFunc.pacmanSoundBufferDecoded,
       { loop: true },
@@ -64,11 +55,16 @@ docElems.loadGridPattern.addEventListener("click", async () => {
     }
 
     foodGen.populateFoodinArrayandDOM();
+    gameFunc.handleGateLogic(stateVars.gateCoord[0], stateVars.gateCoord[1]);
 
     window.scrollTo({
       top: document.body.scrollHeight,
       behavior: "smooth",
     });
+    gameFunc.handleGamePause();
+    await gameFunc.playStartUpMusic();
+    gameFunc.handleGameUnPause();
+    console.log("next step");
   } catch (err) {
     if (err.name === "AbortError") {
       console.log("User has cancelled the Select File operation ");

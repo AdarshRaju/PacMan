@@ -66,9 +66,10 @@ function updatePacmanAnimationDirection() {
 }
 
 export function populatePacmaninArrayandDOM() {
-  const randomIndex = Math.floor(Math.random() * stateVars.pathCoord.length);
-
-  stateVars.currentPacmanCoor = stateVars.pathCoord[randomIndex];
+  const randomIndex = Math.floor(
+    Math.random() * stateVars.filteredpathCoord.length,
+  );
+  stateVars.currentPacmanCoor = stateVars.filteredpathCoord[randomIndex];
 
   addPacmanToState();
 
@@ -115,26 +116,8 @@ export function handleGameOver() {
 
 function handlePacmanPowerUpOnState() {
   stateVars.poweredUp = true;
-  switch (stateVars.pacmanDirection) {
-    case "Up":
-      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
-      break;
-    case "Down":
-      document.dispatchEvent(
-        new KeyboardEvent("keydown", { key: "ArrowDown" }),
-      );
-      break;
-    case "Right":
-      document.dispatchEvent(
-        new KeyboardEvent("keydown", { key: "ArrowRight" }),
-      );
-      break;
-    case "Left":
-      document.dispatchEvent(
-        new KeyboardEvent("keydown", { key: "ArrowLeft" }),
-      );
-      break;
-  }
+
+  gameFunc.handlePacmanMovementReStart();
 
   stateVars.ghostHexedStates.forEach((gs, i, array) => (array[i] = true));
 
@@ -159,7 +142,7 @@ function handlePacmanPowerUpOffState() {
 }
 
 function updatePacmanArrayAndDOM() {
-  if (!stateVars.gameOver) {
+  if (!stateVars.gameOver && !stateVars.paused) {
     removePacmanFromState();
 
     removePacmanFromDOM();
@@ -283,7 +266,7 @@ function updatePacmanArrayAndDOM() {
         handlePacmanPowerUpOnState();
       }
       updatedPacmanCell.push("pacman");
-      if (!stateVars.gameOver) {
+      if (!stateVars.gameOver && !stateVars.paused) {
         addPacmanToDOM();
       }
     }
